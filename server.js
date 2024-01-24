@@ -30,6 +30,15 @@ app.post('/credentials/issue', express.json(), async function(req, res) {
         options = {};
     }
     options.documentLoader = localLoader;
+    // Check if we need context inject of data integrity per
+    // https://w3c.github.io/vc-data-integrity/#context-injection
+    if (!document["@context"].includes("https://www.w3.org/ns/credentials/v2")) {
+        // add data integrity to context if not there
+        if (!document["@context"].includes("https://w3id.org/security/data-integrity/v2")) {
+            document["@context"].push("https://w3id.org/security/data-integrity/v2");
+        }
+    }
+
     // TODO: Check received information
     // TODO: if good prepare to sign
     let mandatoryPointers = [];

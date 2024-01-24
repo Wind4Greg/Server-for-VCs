@@ -3,6 +3,7 @@ import { citizenv1 } from './contexts/citizenship-v1.js'
 import { vcv2 } from './contexts/credv2.js'
 import { examplesv2 } from './contexts/examples-v2.js'
 import { vcv1 } from './contexts/credv1.js'
+import { diV2 } from './contexts/dataIntegrity.js'
 // import { windSDexamples} from './contexts/windSDExample.js';
 
 // Set up a document loader so we don't have to go to the net
@@ -10,7 +11,8 @@ const CONTEXTS = {
   'https://www.w3.org/ns/credentials/v2': { '@context': vcv2 },
   'https://www.w3.org/ns/credentials/examples/v2': { '@context': examplesv2 },
   'https://www.w3.org/2018/credentials/v1': { '@context': vcv1 },
-  'https://w3id.org/citizenship/v1': { '@context': citizenv1 }
+  'https://w3id.org/citizenship/v1': { '@context': citizenv1 },
+  'https://w3id.org/security/data-integrity/v2': {'@context': diV2 }
   // "https://windsurf.grotto-networking.com/selective#": {"@context": windSDexamples}
 }
 // Only needed if you want remote loading, see comments below
