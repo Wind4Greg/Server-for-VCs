@@ -16,10 +16,13 @@ let issue_req_count = 0;
 let verify_req_count = 0;
 console.log(`Server Public Key ${keyMaterial.publicKeyMultibase}`);
 
+// TODO: put limits on size in express.json
 
 app.post('/credentials/issue', express.json(), async function(req, res) {
     console.log(`Received issue request #${issue_req_count++}`);
+    // Take a look at what we are receiving
     console.log(JSON.stringify(req.body, null, 2));
+    // TODO: Check received information
     let document = req.body.credential;
     let options = req.body.options;
     if (!document) {
@@ -38,19 +41,30 @@ app.post('/credentials/issue', express.json(), async function(req, res) {
             document["@context"].push("https://w3id.org/security/data-integrity/v2");
         }
     }
-
-    // TODO: Check received information
+    // console.log(document);
     // TODO: if good prepare to sign
     let mandatoryPointers = [];
     //  async function signBase (document, keyPair, mandatoryPointers, options)
     const signCred = await signBase(document, keyPair, mandatoryPointers, options);
+    console.log(`Responding to issue request #${issue_req_count++} with signed document:`);
+    console.log(JSON.stringify(signCred, null, 2));
     res.status(201).json(signCred);
 })
 
 app.post('/credentials/verify', express.json(), function(req, res) {
     console.log(`Received verify request #${verify_req_count++}`);
+    // Take a look at what we are receiving
     console.log(JSON.stringify(req.body, null, 2));
-    res.json({note: "Not implemented yet"});
+    const document = req.body;
+    // Will need context injection stuff at some point.
+    // if (!document["@context"].includes("https://www.w3.org/ns/credentials/v2")) {
+    //     // add data integrity to context if not there
+    //     if (!document["@context"].includes("https://w3id.org/security/data-integrity/v2")) {
+    //         document["@context"].push("https://w3id.org/security/data-integrity/v2");
+    //     }
+    // }
+    // async function verifyBase (doc, pubKey, options)
+    res.status(400).json({errors: ["Not implemented yet"], checks: [], warnings: []});
 })
 
 const host = '127.0.0.2'; // Servers local IP address.
