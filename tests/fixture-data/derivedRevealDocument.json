@@ -1,0 +1,46 @@
+{
+  "@context": [
+    "https://www.w3.org/ns/credentials/v2",
+    {
+      "@vocab": "https://windsurf.grotto-networking.com/selective#"
+    }
+  ],
+  "type": [
+    "VerifiableCredential"
+  ],
+  "credentialSubject": {
+    "sailNumber": "Earth101",
+    "sails": [
+      {
+        "size": 6.1,
+        "sailName": "Lahaina",
+        "year": 2023
+      },
+      {
+        "size": 7,
+        "sailName": "Lahaina",
+        "year": 2020
+      }
+    ],
+    "boards": [
+      {
+        "year": 2022,
+        "boardName": "CompFoil170",
+        "brand": "Wailea"
+      },
+      {
+        "boardName": "Kanaha Custom",
+        "brand": "Wailea",
+        "year": 2019
+      }
+    ]
+  },
+  "proof": {
+    "type": "DataIntegrityProof",
+    "cryptosuite": "ecdsa-sd-2023",
+    "created": "2023-08-15T23:36:38Z",
+    "verificationMethod": "did:key:zDnaepBuvsQ8cpsWrVKw8fbpGpvPeNSjVPTWoq6cRqaYzBKVP#zDnaepBuvsQ8cpsWrVKw8fbpGpvPeNSjVPTWoq6cRqaYzBKVP",
+    "proofPurpose": "assertionMethod",
+    "proofValue": "u2V0BhdhAWECql7UfnVlTiPZmpE0_46MDRzUXs9n_uidA-299Jsre3v1MMVGZeFF8EaZNIr1Fo9_54UMqdYoKbOdgTWVEydVI2EBYI4AkAipyzhm2PxbjPgEqUpJDsbCEdhPJ-zJdqtVEOrRMM4uThthAWEBtAwxySlwwASjXlYLoLwyjdsIRYUa05OQzE0P4skx1-QJKi8HtGcJHtJfOTn7RhWKC0nkXODvUAChvnKDVY02T2EBYQKUB5WERpVFZL_ll9ToyWCdfTsO4qb1cFL5vdEp9yIzUS7svaa-Qx5t8FZVTD1aS6o0vhPP4yQ3iVeaWNG3yvwPYQFhAqLTdVe1JKRlqP3GEI6ondyEGsRO7C5NgA5ioxHDXufWPIvmpjYcDjHtNT807xj4pPst4Xy9LewBllOoJiY_QPNhAWECBIfZ9MDurxCmRF35T6_NvW98RmYoOkoPTkiKYb-f3sy2o4wifSQJWsK-O68V0f8PbNtHrSiv46uXN4Km5xjgB2EBYQLTj83U9T_ZGb-6bT0DRSj_x9pNAeYLsTO1tVv6X09zNGSV-GpaUa-TPxsAbMNPZg75kNgxnw0yRezZi6RMffvvYQFhAgcBXPlpHvyX01HXXLPnxZFrnKv1natoPUdKvMMMsl4ED771SLhhBt63HQiu9C5_-ucTGlIKt9xrIhQphkLNCj6YA2EBYIOGCDmZ9TBxEtWeCI9oVmRt0eHRGAaoOXx08gxL2IQt_AdhAWCBWRS4GuU5oQsZVBYkPgz-pbltwoQdYY1s6s8D-oA4orALYQFggkR2991GJuy_Tkjem_x7pLVpS4C4GkZAcuGtiPhBfSScD2EBYIJNAHl4CeHuptV7FefsRbndC_9ZlI2fTH34YOWmRk8g5BNhAWCB9RYlEdD2PWOZQocsvyTqbQJnyDi_veA6lozmQvdkAJAXYQFgg2IE-HtO6PyHQsGnuqhO1mX6V7RkRREhF0d0sWZlxNOaNAAECBQYHCAkKCw0ODw"
+  }
+}

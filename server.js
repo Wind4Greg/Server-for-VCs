@@ -1,8 +1,22 @@
 import express from 'express';
 import { readFile } from 'fs/promises'
 import { base58btc } from 'multiformats/bases/base58'
-import {signBase} from './lib/signBase.js'
+import { base64url } from 'multiformats/bases/base64'
+import { signBase } from './lib/signBase.js'
+import { verifyBase } from './lib/verifyBase.js'
+import { verifyDerived } from './lib/verifyDerived.js'
 import { localLoader } from './documentLoader.js'
+
+// JSON protection
+let jsonParser = express.json({limit: 10000}); // 10KB
+function jsonError(err, req, res, next) {
+    res.status(400).json({
+        error: true,
+        message: "too big"
+    });
+    console.log("JSON input over limit");
+    return;
+  };
 
 // Obtain key material and process into byte array format
 const keyMaterial = JSON.parse(
@@ -16,9 +30,11 @@ let issue_req_count = 0;
 let verify_req_count = 0;
 console.log(`Server Public Key ${keyMaterial.publicKeyMultibase}`);
 
-// TODO: put limits on size in express.json
 
-app.post('/credentials/issue', express.json(), async function(req, res) {
+// Used in ECDSA-SD to add a **base proof** to an unsigned credential
+// Endpoint: POST /credentials/issue, object:{credential, mandatoryPointers, options}.
+
+app.post('/credentials/issue', jsonParser, async function(req, res) {
     console.log(`Received issue request #${issue_req_count++}`);
     // Take a look at what we are receiving
     console.log(JSON.stringify(req.body, null, 2));
@@ -43,32 +59,86 @@ app.post('/credentials/issue', express.json(), async function(req, res) {
     }
     // console.log(document);
     // TODO: if good prepare to sign
-    let mandatoryPointers = [];
+    let mandatoryPointers = req.body.mandatoryPointers;
+    if (!mandatoryPointers) {
+        mandatoryPointers = [];
+    }
     //  async function signBase (document, keyPair, mandatoryPointers, options)
     const signCred = await signBase(document, keyPair, mandatoryPointers, options);
     console.log(`Responding to issue request #${issue_req_count++} with signed document:`);
     console.log(JSON.stringify(signCred, null, 2));
     res.status(201).json(signCred);
-})
+}, jsonError)
 
-app.post('/credentials/verify', express.json(), function(req, res) {
+// Used to verify a derived credential, or a credential with a signed base proof
+// Endpoint: POST /credentials/verify, object: {verifiableCredential, options}
+
+app.post('/credentials/verify', jsonParser, async function(req, res) {
     console.log(`Received verify request #${verify_req_count++}`);
     // Take a look at what we are receiving
     console.log(JSON.stringify(req.body, null, 2));
-    const document = req.body;
-    // Will need context injection stuff at some point.
-    // if (!document["@context"].includes("https://www.w3.org/ns/credentials/v2")) {
-    //     // add data integrity to context if not there
-    //     if (!document["@context"].includes("https://w3id.org/security/data-integrity/v2")) {
-    //         document["@context"].push("https://w3id.org/security/data-integrity/v2");
-    //     }
-    // }
-    // async function verifyBase (doc, pubKey, options)
+    const signedDoc = req.body.verifiableCredential;
+    // TODO: perform input checks on signedDoc
+    const options = req.body.options;
+    options.documentLoader = localLoader;
+    const proofValue = signedDoc.proof?.proofValue;
+    if (proofValue == null) {
+        res.status(400).json({errors: ["No proofValue"], checks: [], warnings: []});
+    }
+    let pubKey = extractPublicKey(signedDoc);
+    if (isECDSA_SD_base(proofValue)) {
+        const result = await verifyBase (signedDoc, pubKey, options);
+        let statusCode = 200;
+        if (!result) {
+            statusCode = 400;
+        }
+        res.status(statusCode).json({checks: [], warnings: []});
+        return;
+    } else { // This is a derived proof
+        const result = await verifyDerived(signedDoc, pubKey, options);
+        let statusCode = 200;
+        if (!result) {
+            statusCode = 400;
+        }
+        res.status(statusCode).json({checks: [], warnings: []});
+        return;
+    }
+    res.status(400).json({errors: ["Only for ECDSA-SD verification"], checks: [], warnings: []});
+}, jsonError)
+
+// Used to issue a selectively disclosed credential with derived proof
+// POST /credentials/derive, object: {verifiableCredential, selectivePointers, options}.
+app.post('/credentials/derive', jsonParser, function(req, res) {
     res.status(400).json({errors: ["Not implemented yet"], checks: [], warnings: []});
-})
+}, jsonError);
+
+
 
 const host = '127.0.0.2'; // Servers local IP address.
 const port = '5555';
 app.listen(port, host, function () {
 console.log(`Example app listening on IPv4: ${host}:${port}`);
 });
+
+function isECDSA_SD_base(proofValue) {
+    const proofValueBytes = base64url.decode(proofValue)
+    // console.log(proofValueBytes.length);
+    // check header bytes are: 0xd9, 0x5d, and 0x00
+    if (proofValueBytes[0] == 0xd9 && proofValueBytes[1] == 0x5d && proofValueBytes[2] == 0x00) {
+      return true;
+    } else {
+      return false;
+    }
+}
+
+function extractPublicKey(signedDoc)  {
+    const verificationMethod = signedDoc.proof?.verificationMethod;
+    if (!verificationMethod.startsWith('did:key:')) {
+        throw new TypeError('Only can handle did:key verification at this time');
+    }
+    const encodedPbk = verificationMethod.split('did:key:')[1].split('#')[0]
+    let pbk = base58btc.decode(encodedPbk)
+    pbk = pbk.slice(2, pbk.length) // First two bytes are multi-format indicator
+    // console.log(`Public Key hex: ${bytesToHex(pbk)}, Length: ${pbk.length}`);
+    return pbk;
+}
