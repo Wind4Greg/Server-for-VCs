@@ -26,33 +26,13 @@ For both base proof and derived proof the encoding is *base64url-no-pad-encoding
 * **base proof** header bytes 0xd9, 0x5d, and 0x00
 * **disclosure proof** header bytes 0xd9, 0x5d, and 0x01
 
-# Notes
+# Input Validation Notes
 
 These are just my rough notes for now...
 
-## Requirements
-
-From the interop test suite instructions:
-
-> You will need an issuer and verifier that are compatible with VC API and are capable of handling issuance and verification of Verifiable Credentials with DataIntegrityProof proof type using the ecdsa-rdfc-2019, ecdsa-jcs-2019, or ecdsa-sd-2023 cryptosuites.
-
-Issuance: [VC-API Issue Credential](https://w3c-ccg.github.io/vc-api/#issue-credential),
-
-Method and endpoint: POST /credentials/issue
-
-Takes as inputs: unsigned credential, and options.
-
-Verification: [VC-API Verify Credential](https://w3c-ccg.github.io/vc-api/#verify-credential)
-
-Method and endpoint: POST /credentials/verify
-
-Takes as inputs: signed credential, and options
-
-Since I'm just implementing ECDSA-SD here I will restrict to those using Data Integrity.
-
 From the data integrity specification:
 
-2.1 Proofs
+## 2.1 Proofs
 
 id
     An optional identifier for the proof, which MUST be a URL [URL], such as a UUID as a URN (urn:uuid:6a1676b8-b51f-11ed-937b-d76685a20ff5). The usage of this property is further explained in Section 2.1.2 Proof Chains.
@@ -77,7 +57,7 @@ previousProof
 nonce
     An OPTIONAL string value supplied by the proof creator. One use of this field is to increase privacy by decreasing linkability that is the result of deterministically generated signatures.
 
-Refined in the ECDSA specification:
+## Refined in the ECDSA specification:
 
 2.2.1 DataIntegrityProof
 
@@ -90,5 +70,3 @@ The cryptosuite property of the proof MUST be ecdsa-rdfc-2019 or ecdsa-jcs-2019.
 The created property of the proof MUST be an [XMLSCHEMA11-2] formatted date string.
 
 The proofPurpose property of the proof MUST be a string, and MUST match the verification relationship expressed by the verification method controller.
-
-The value of the proofValue property of the proof MUST be an ECDSA signature produced according to [FIPS-186-5] and SHOULD use the deterministic ECDSA signature variant, produced according to [FIPS-186-5] using the curves and hashes as specified in section 3. Algorithms, encoded according to section 7 of [RFC4754] (sometimes referred to as the IEEE P1363 format), and encoded using the base-58-btc header and alphabet as described in the Multibase section of [VC-DATA-INTEGRITY].

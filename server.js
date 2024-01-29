@@ -2,12 +2,13 @@ import express from 'express';
 import { readFile } from 'fs/promises'
 import { base58btc } from 'multiformats/bases/base58'
 import { base64url } from 'multiformats/bases/base64'
+import { derive } from './lib/derive.js'
 import { signBase } from './lib/signBase.js'
 import { verifyBase } from './lib/verifyBase.js'
 import { verifyDerived } from './lib/verifyDerived.js'
 import { localLoader } from './documentLoader.js'
 
-// JSON protection
+// JSON input protection
 let jsonParser = express.json({limit: 10000}); // 10KB
 function jsonError(err, req, res, next) {
     res.status(400).json({
@@ -28,6 +29,8 @@ keyPair.pub = base58btc.decode(keyMaterial.publicKeyMultibase).slice(2)
 const app = express(`Server Public Key: ${keyMaterial.publicKeyMultibase}`);
 let issue_req_count = 0;
 let verify_req_count = 0;
+let derive_req_count = 0;
+
 console.log(`Server Public Key ${keyMaterial.publicKeyMultibase}`);
 
 
@@ -38,7 +41,7 @@ app.post('/credentials/issue', jsonParser, async function(req, res) {
     console.log(`Received issue request #${issue_req_count++}`);
     // Take a look at what we are receiving
     console.log(JSON.stringify(req.body, null, 2));
-    // TODO: Check received information
+    // TODO: Check received information!!!!
     let document = req.body.credential;
     let options = req.body.options;
     if (!document) {
@@ -58,12 +61,10 @@ app.post('/credentials/issue', jsonParser, async function(req, res) {
         }
     }
     // console.log(document);
-    // TODO: if good prepare to sign
     let mandatoryPointers = req.body.mandatoryPointers;
     if (!mandatoryPointers) {
         mandatoryPointers = [];
     }
-    //  async function signBase (document, keyPair, mandatoryPointers, options)
     const signCred = await signBase(document, keyPair, mandatoryPointers, options);
     console.log(`Responding to issue request #${issue_req_count++} with signed document:`);
     console.log(JSON.stringify(signCred, null, 2));
@@ -78,7 +79,7 @@ app.post('/credentials/verify', jsonParser, async function(req, res) {
     // Take a look at what we are receiving
     console.log(JSON.stringify(req.body, null, 2));
     const signedDoc = req.body.verifiableCredential;
-    // TODO: perform input checks on signedDoc
+    // TODO: perform input checks on signedDoc!!!!
     const options = req.body.options;
     options.documentLoader = localLoader;
     const proofValue = signedDoc.proof?.proofValue;
@@ -103,13 +104,41 @@ app.post('/credentials/verify', jsonParser, async function(req, res) {
         res.status(statusCode).json({checks: [], warnings: []});
         return;
     }
-    res.status(400).json({errors: ["Only for ECDSA-SD verification"], checks: [], warnings: []});
 }, jsonError)
 
 // Used to issue a selectively disclosed credential with derived proof
 // POST /credentials/derive, object: {verifiableCredential, selectivePointers, options}.
-app.post('/credentials/derive', jsonParser, function(req, res) {
-    res.status(400).json({errors: ["Not implemented yet"], checks: [], warnings: []});
+app.post('/credentials/derive', jsonParser, async function(req, res) {
+    console.log(`Received derived request #${derive_req_count++}`);
+    // Take a look at what we are receiving
+    console.log(JSON.stringify(req.body, null, 2));
+    // TODO: Check received information!!!!
+    let document = req.body.verifiableCredential;
+    let selectivePointers = req.body.selectivePointers;
+    let options = req.body.options;
+    if (!document) {
+        res.status(400).json({note: "error of some kind"});
+        return;
+    }
+    if (!selectivePointers) {
+        res.status(400).json({errors: ["Nothing selected"], checks: [], warnings: []});
+    }
+    if (!options) {
+        options = {};
+    }
+    options.documentLoader = localLoader;
+
+    //  async function signBase (document, keyPair, mandatoryPointers, options)
+    try {
+      const derivedCred = await derive (document, selectivePointers, options)
+      console.log(`Responding to derive request #${derive_req_count} with derived document:`);
+      console.log(JSON.stringify(derivedCred, null, 2));
+      res.status(201).json(derivedCred);
+      return
+    } catch (error) {
+      console.log(`Error deriving: ${error}`);
+      res.status(400).json({errors: [error], checks: [], warnings: []});
+    }
 }, jsonError);
 
 
@@ -119,6 +148,8 @@ const port = '5555';
 app.listen(port, host, function () {
 console.log(`Example app listening on IPv4: ${host}:${port}`);
 });
+
+// Helper functions
 
 function isECDSA_SD_base(proofValue) {
     const proofValueBytes = base64url.decode(proofValue)
