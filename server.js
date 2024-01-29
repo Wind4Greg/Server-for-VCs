@@ -38,7 +38,7 @@ console.log(`Server Public Key ${keyMaterial.publicKeyMultibase}`);
 // Endpoint: POST /credentials/issue, object:{credential, mandatoryPointers, options}.
 
 app.post('/credentials/issue', jsonParser, async function(req, res) {
-    console.log(`Received issue request #${issue_req_count++}`);
+    console.log(`Received issue request #${++issue_req_count}`);
     // Take a look at what we are receiving
     console.log(JSON.stringify(req.body, null, 2));
     // TODO: Check received information!!!!
@@ -66,7 +66,7 @@ app.post('/credentials/issue', jsonParser, async function(req, res) {
         mandatoryPointers = [];
     }
     const signCred = await signBase(document, keyPair, mandatoryPointers, options);
-    console.log(`Responding to issue request #${issue_req_count++} with signed document:`);
+    console.log(`Responding to issue request #${issue_req_count} with signed document:`);
     console.log(JSON.stringify(signCred, null, 2));
     res.status(201).json(signCred);
 }, jsonError)
@@ -75,16 +75,21 @@ app.post('/credentials/issue', jsonParser, async function(req, res) {
 // Endpoint: POST /credentials/verify, object: {verifiableCredential, options}
 
 app.post('/credentials/verify', jsonParser, async function(req, res) {
-    console.log(`Received verify request #${verify_req_count++}`);
+    console.log(`Received verify request #${++verify_req_count}`);
     // Take a look at what we are receiving
     console.log(JSON.stringify(req.body, null, 2));
     const signedDoc = req.body.verifiableCredential;
     // TODO: perform input checks on signedDoc!!!!
+    if (!signedDoc) {
+        res.status(400).json({errors: ["No signed doc"], checks: [], warnings: []});
+        return;
+    }
     const options = req.body.options;
     options.documentLoader = localLoader;
     const proofValue = signedDoc.proof?.proofValue;
     if (proofValue == null) {
         res.status(400).json({errors: ["No proofValue"], checks: [], warnings: []});
+        return;
     }
     let pubKey = extractPublicKey(signedDoc);
     if (isECDSA_SD_base(proofValue)) {
@@ -109,7 +114,7 @@ app.post('/credentials/verify', jsonParser, async function(req, res) {
 // Used to issue a selectively disclosed credential with derived proof
 // POST /credentials/derive, object: {verifiableCredential, selectivePointers, options}.
 app.post('/credentials/derive', jsonParser, async function(req, res) {
-    console.log(`Received derived request #${derive_req_count++}`);
+    console.log(`Received derived request #${++derive_req_count}`);
     // Take a look at what we are receiving
     console.log(JSON.stringify(req.body, null, 2));
     // TODO: Check received information!!!!
