@@ -4,8 +4,10 @@ import { readFile } from 'fs/promises'
 const urlBase = "http://127.0.0.2:5555/";
 
 const testDataPath = './fixture-data/'
+const fileName = 'derivedRevealDocument.json';
+// const fileName = 'dbSigned2.json';
 const signedDerived = JSON.parse(
-    await readFile(new URL(testDataPath + 'derivedRevealDocument.json', import.meta.url)));
+    await readFile(new URL(testDataPath + fileName, import.meta.url)));
 
 describe("Simple Derived Verify", function () {
     it("With signed derived document", async function () {

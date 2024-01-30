@@ -1,0 +1,52 @@
+{
+    "@context": [
+      "https://www.w3.org/2018/credentials/v1",
+      {
+        "@protected": true,
+        "DriverLicenseCredential": "urn:example:DriverLicenseCredential",
+        "DriverLicense": {
+          "@id": "urn:example:DriverLicense",
+          "@context": {
+            "@protected": true,
+            "id": "@id",
+            "type": "@type",
+            "documentIdentifier": "urn:example:documentIdentifier",
+            "dateOfBirth": "urn:example:dateOfBirth",
+            "expirationDate": "urn:example:expiration",
+            "issuingAuthority": "urn:example:issuingAuthority"
+          }
+        },
+        "driverLicense": {
+          "@id": "urn:example:driverLicense",
+          "@type": "@id"
+        }
+      },
+      "https://w3id.org/security/data-integrity/v2"
+    ],
+    "id": "urn:uuid:5e08b80a-1f41-4754-bb44-48e3a893cde1",
+    "type": [
+      "VerifiableCredential",
+      "DriverLicenseCredential"
+    ],
+    "credentialSubject": {
+      "id": "urn:uuid:1a0e4ef5-091f-4060-842e-18e519ab9440",
+      "driverLicense": {
+        "type": "DriverLicense",
+        "documentIdentifier": "T21387yc328c7y32h23f23",
+        "dateOfBirth": "01-01-1990",
+        "expirationDate": "01-01-2030",
+        "issuingAuthority": "VA"
+      }
+    },
+    "issuer": "did:key:zDnaeeVjzj2eZCrQgkr1mxqDSw49xJExLNbRhR2dmHaCn3tBT",
+    "issuanceDate": "2024-01-30T12:53:18Z",
+    "proof": {
+      "id": "urn:uuid:bcf64545-3e95-4ee1-ad0a-667ef126e703",
+      "type": "DataIntegrityProof",
+      "created": "2024-01-30T12:53:18Z",
+      "verificationMethod": "did:key:zDnaeeVjzj2eZCrQgkr1mxqDSw49xJExLNbRhR2dmHaCn3tBT#zDnaeeVjzj2eZCrQgkr1mxqDSw49xJExLNbRhR2dmHaCn3tBT",
+      "cryptosuite": "ecdsa-sd-2023",
+      "proofPurpose": "assertionMethod",
+      "proofValue": "u2V0AhVhAjv-RVBNqUc1zfyk7me7b-gNjdlTMSolywOul3gmYRfURsZzq2aAWvhqLONsLbylCCiwBz4KuqC08_L6ylENrgVgjgCQCdoT5_WTFmScwhmG9pGaAczWxnfcY58jq0BGTPSHbpHRYIFQC9UQhL39297yE1Zq53Ze4pQmfrNFcZcmBR73V3akuh1hAxT_DsL6advctunnYAlSjoEYnaMM-53pNXD2TLdVcNRNoiJiIHUVUS8j6NjmD1O1czX7XSPeAej4-zbz32ACRblhAxup1sUmDAP5AgT6fjvmYsSr1PK6fe-2I-7LVw-APjtPITxlLMy0MpSvEl2Vz871u5D2lEfAxUx7Y-MRtBLP2ulhAmVP1Su5TVOs4LnHsn-zaP_MLILNmqDJMIUaFNO-_Jy83P8uSU97RE2HLnxBUDlKAmshJsy4QtPjiQWWX_OjEhFhAf3DoKI-o_W1tLRMC58kKAQTxEIRPsiu-THQ900Trmtrg76dY_cBPLSsHT5dYM4n6NUckM2iXSu2urORsTY3YH1hAjgfTMcM1miNS-8M4MrjxSLvsL9bku08MZWy5CE3cKHlahQFvsOe_JaR-5ILzCiqagDae_nlJeAPwzUVGEMls0lhAaN7c1P7-uJjUKwKUYQGm-J_EfTmPK7WAOfApM0bmrpTdijOMHu76beIx31cUvJepH6eWVh1uRqvoUn_0egkTCVhAUDch9wLcGhGn188UXqyaYjqm9iyPUKzI8PHxqYy8RLiYU-_MCQaZ8HD2CFupwj6xkDhjEjIXhVKO2W72kPdoXoJnL2lzc3Vlcm0vaXNzdWFuY2VEYXRl"
+    }
+  }
