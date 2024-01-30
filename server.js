@@ -94,6 +94,7 @@ app.post('/credentials/verify', jsonParser, async function(req, res) {
     let pubKey = extractPublicKey(signedDoc);
     if (isECDSA_SD_base(proofValue)) {
         const result = await verifyBase (signedDoc, pubKey, options);
+        console.log(`Responding to verify request #${verify_req_count} Base Proof verified: ${result}`);
         let statusCode = 200;
         if (!result) {
             statusCode = 400;
@@ -102,6 +103,7 @@ app.post('/credentials/verify', jsonParser, async function(req, res) {
         return;
     } else { // This is a derived proof
         const result = await verifyDerived(signedDoc, pubKey, options);
+        console.log(`Responding to verify request #${verify_req_count} Derived Proof verified: ${result}`);
         let statusCode = 200;
         if (!result) {
             statusCode = 400;

@@ -21,6 +21,39 @@ Unlike `ecdsa-rdfc-2019` and `ecdsa-jcs-2019`, `ecdsa-sd-2023` has three (or fou
 
 Note: The *verify base* and *verify derived* use the same POST `/credential/verify` endpoint. The server looks at the `proofValue` information to determine which verification function to call.
 
+## Credential Value Checking
+
+When asked to sign a credential should perform some basic sanity checks on the contents of the credential. We can get these from the VC data models.
+
+### VC Data Model 1.1
+
+See Section 4 of [Verifiable Credential Data Model v1.1](https://www.w3.org/TR/vc-data-model/#basic-concepts).
+
+* Verifiable credentials and verifiable presentations **MUST** include a `@context` property.
+* This specification defines the **optional** `id` property for such identifiers. If present the value of the id property **MUST** be a URI.
+* Verifiable credentials and verifiable presentations **MUST** have a `type` property.
+* A verifiable credential **MUST** have a `credentialSubject` property.
+* A verifiable credential **MUST** have an `issuer` property.
+* A credential **MUST** have an `issuanceDate` property. The value of the issuanceDate property MUST be a string value of an [XMLSCHEMA11-2] combined date-time string representing the date and time the credential becomes valid, which could be a date and time in the future.
+* When embedding a proof, the `proof` property **MUST** be used.
+* If present, the value of the `expirationDate` property **MUST** be a string value of an [XMLSCHEMA11-2] date-time representing the date and time the credential ceases to be valid.
+* If present, the value of the `credentialStatus` property
+
+### VC Data Model 2.0
+
+From Section 4 of [Verifiable Credential Data Model 2.0](https://www.w3.org/TR/vc-data-model-2.0/#basic-concepts)
+
+* Verifiable credentials and verifiable presentations MUST include a @context property.
+* This specification defines the optional `id` property for such identifiers. The value of the `id` property **MUST** be a URL which MAY be dereferenced.
+* Verifiable credentials and verifiable presentations MUST have a `type` property.
+* `name` An **OPTIONAL** property that expresses the name of the credential.
+* `description` An **OPTIONAL** property that conveys specific details about a credential.
+* A verifiable credential **MUST** have a `credentialSubject` property.
+* A verifiable credential **MUST** have an `issuer` property.
+* `validFrom` If present, the value of the validFrom property **MUST** be an [XMLSCHEMA11-2] dateTimeStamp string value representing the date and time the credential becomes valid
+* `validUntil` If present, the value of the validUntil property **MUST** be an [XMLSCHEMA11-2] dateTimeStamp string value representing the date and time the credential ceases to be valid
+* This specification defines the `credentialStatus` property for the discovery of information about the status of a verifiable credential, such as whether it is suspended or revoked.
+
 ## Proof Value Checking
 
 For both base proof and derived proof the encoding is *base64url-no-pad-encoding* and **not** *base-58-btc* and starts with a `u` and **not** a 'z'. In addition the decoded proofs should start with the following bytes:
@@ -36,6 +69,7 @@ From the data integrity specification:
 
 ## 2.1 Proofs
 
+```
 id
     An optional identifier for the proof, which MUST be a URL [URL], such as a UUID as a URN (urn:uuid:6a1676b8-b51f-11ed-937b-d76685a20ff5). The usage of this property is further explained in Section 2.1.2 Proof Chains.
 type
@@ -58,11 +92,13 @@ previousProof
     An OPTIONAL string value or unordered list of string values. Each value identifies another data integrity proof that MUST verify before the current proof is processed. If an unordered list, all referenced proofs in the array MUST verify. This property is used in Section 2.1.2 Proof Chains.
 nonce
     An OPTIONAL string value supplied by the proof creator. One use of this field is to increase privacy by decreasing linkability that is the result of deterministically generated signatures.
+```
 
 ## Refined in the ECDSA specification:
 
 2.2.1 DataIntegrityProof
 
+```
 The verificationMethod property of the proof MUST be a URL. Dereferencing the verificationMethod MUST result in an object containing a type property with the value set to Multikey.
 
 The type property of the proof MUST be DataIntegrityProof.
@@ -72,3 +108,4 @@ The cryptosuite property of the proof MUST be ecdsa-rdfc-2019 or ecdsa-jcs-2019.
 The created property of the proof MUST be an [XMLSCHEMA11-2] formatted date string.
 
 The proofPurpose property of the proof MUST be a string, and MUST match the verification relationship expressed by the verification method controller.
+```

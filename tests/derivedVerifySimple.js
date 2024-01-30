@@ -17,6 +17,7 @@ describe("Simple Derived Verify", function () {
             "Content-Type": "application/json",
         },
         });
+        console.log(`return code: ${res.status}`);
         console.log(JSON.stringify(await res.json()));
         assert.isOk(res.ok);
     });
