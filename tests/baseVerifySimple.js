@@ -4,8 +4,8 @@ import { readFile } from 'fs/promises'
 const urlBase = "http://127.0.0.2:5555/";
 
 const testDataPath = './fixture-data/';
-const fileName = 'addSignedSDBase.json';
-// const fileName = 'dbSigned1.json';
+// const fileName = 'addSignedSDBase.json';
+const fileName = 'dbSigned1.json';
 const signedBase = JSON.parse(
     await readFile(new URL(testDataPath + fileName, import.meta.url)));
 
