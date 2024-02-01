@@ -11,7 +11,7 @@ const mandatoryPointers = JSON.parse(
 
 describe("Simple Base Signing", function () {
     it("With document and mandatory pointers", async function () {
-        const content = {credential: document, mandatoryPointers, options: {}};
+        const content = {credential: document, options: {mandatoryPointers}};
         let res = await fetch(urlBase + "credentials/issue", {
         method: "POST",
         body: JSON.stringify(content),
