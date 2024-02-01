@@ -1,31 +1,23 @@
 import express from 'express';
-import { readFile } from 'fs/promises'
-import { base58btc } from 'multiformats/bases/base58'
-import { base64url } from 'multiformats/bases/base64'
 import { credentialValidator, proofValidator } from './validators.js';
 import { derive } from './lib/derive.js'
 import { signBase } from './lib/signBase.js'
 import { verifyBase } from './lib/verifyBase.js'
 import { verifyDerived } from './lib/verifyDerived.js'
 import { localLoader } from './documentLoader.js'
+import { isECDSA_SD_base, extractPublicKey, getServerKeyPair } from './helpers.js';
 
 
 // JSON input protection
 let jsonParser = express.json({ limit: 10000 }); // 10KB
 
 // Obtain key material and process into byte array format
-const keyMaterial = JSON.parse(
-    await readFile(new URL('./SDKeyMaterial.json', import.meta.url)))
-// Sample long term issuer signing key
-const keyPair = {}
-keyPair.priv = base58btc.decode(keyMaterial.privateKeyMultibase).slice(2)
-keyPair.pub = base58btc.decode(keyMaterial.publicKeyMultibase).slice(2)
-const app = express(`Server Public Key: ${keyMaterial.publicKeyMultibase}`);
+const keyPair = await getServerKeyPair();
+
+const app = express();
 let issue_req_count = 0;
 let verify_req_count = 0;
 let derive_req_count = 0;
-
-console.log(`Server Public Key ${keyMaterial.publicKeyMultibase}`);
 
 
 // Used in ECDSA-SD to add a **base proof** to an unsigned credential
@@ -115,28 +107,29 @@ app.post('/credentials/verify', jsonParser, async function (req, res, next) {
 
 // Used to issue a selectively disclosed credential with derived proof
 // POST /credentials/derive, object: {verifiableCredential, selectivePointers, options}.
-app.post('/credentials/derive', jsonParser, async function (req, res) {
+app.post('/credentials/derive', jsonParser, async function (req, res, next) {
     console.log(`Received derived request #${++derive_req_count}`);
     // Take a look at what we are receiving
     console.log(JSON.stringify(req.body, null, 2));
-    // TODO: Check received information!!!!
-    let document = req.body.verifiableCredential;
-    let selectivePointers = req.body.selectivePointers;
-    let options = req.body.options;
-    if (!document) {
-        res.status(400).json({ note: "error of some kind" });
-        return;
-    }
-    if (!selectivePointers) {
-        res.status(400).json({ errors: ["Nothing selected"], checks: [], warnings: [] });
-    }
-    if (!options) {
-        options = {};
-    }
-    options.documentLoader = localLoader;
-
-    //  async function signBase (document, keyPair, mandatoryPointers, options)
     try {
+        let document = req.body.verifiableCredential;
+        let selectivePointers = req.body.selectivePointers;
+        let options = req.body.options;
+        if (!document) {
+            throw { type: "missingDocument" };
+        }
+        credentialValidator(document);
+        if (!selectivePointers) {
+            throw { type: "nothingSelected"};
+        }
+        if (!options) {
+            options = {};
+        }
+        if (!document.proof) {
+            throw { type: "missingProof" };
+        }
+        proofValidator(document.proof);
+        options.documentLoader = localLoader;
         const derivedCred = await derive(document, selectivePointers, options)
         console.log(`Responding to derive request #${derive_req_count} with derived document:`);
         console.log(JSON.stringify(derivedCred, null, 2));
@@ -144,7 +137,12 @@ app.post('/credentials/derive', jsonParser, async function (req, res) {
         return
     } catch (error) {
         console.log(`Error deriving: ${error}`);
-        res.status(400).json({ errors: [error], checks: [], warnings: [] });
+        let err = error;
+        if (!error.type) { // an exception from my ECDSA-SD library, rather than one I locally threw
+            // Format it for easy handling
+            err = {type: "deriveError", message: `${error}`}
+        }
+        return next(err);
     }
 });
 
@@ -167,13 +165,19 @@ app.use((err, req, res, next) => {
             res.status(400).json({ errors: [err.errors[0].message] });
             return;
         case "invalidProof":
-                res.status(400).json({ errors: ["proof: " + err.errors[0].message] });
-                return;
+            res.status(400).json({ errors: ["proof: " + err.errors[0].message] });
+            return;
         case "missingDocument":
             res.status(400).json({ errors: ["no credential supplied"] });
             return;
         case "missingProof":
             res.status(400).json({ errors: ["no proof on credential"] });
+            return;
+        case "nothingSelected":
+            res.status(400).json({ errors: ["Nothing selected"]});
+            return;
+        case "deriveError":
+            res.status(400).json({errors: [err.message]});
             return;
         default:
             res.status(500).json({ errors: ["Unknown"] });
@@ -188,27 +192,3 @@ app.listen(port, host, function () {
     console.log(`Example app listening on IPv4: ${host}:${port}`);
 });
 
-// Helper functions
-
-function isECDSA_SD_base(proofValue) {
-    const proofValueBytes = base64url.decode(proofValue)
-    // console.log(proofValueBytes.length);
-    // check header bytes are: 0xd9, 0x5d, and 0x00
-    if (proofValueBytes[0] == 0xd9 && proofValueBytes[1] == 0x5d && proofValueBytes[2] == 0x00) {
-        return true;
-    } else {
-        return false;
-    }
-}
-
-function extractPublicKey(signedDoc) {
-    const verificationMethod = signedDoc.proof?.verificationMethod;
-    if (!verificationMethod.startsWith('did:key:')) {
-        throw new TypeError('Only can handle did:key verification at this time');
-    }
-    const encodedPbk = verificationMethod.split('did:key:')[1].split('#')[0]
-    let pbk = base58btc.decode(encodedPbk)
-    pbk = pbk.slice(2, pbk.length) // First two bytes are multi-format indicator
-    // console.log(`Public Key hex: ${bytesToHex(pbk)}, Length: ${pbk.length}`);
-    return pbk;
-}

@@ -63,7 +63,9 @@ For both base proof and derived proof the encoding is *base64url-no-pad-encoding
 
 # Input Validation Notes
 
-These are just my rough notes for now...
+Using JSON schema and AJV library to help with validation.
+
+*Note*: temporarily removed `, "issuer"` from *required* in credential schema since my own examples were missing this field.
 
 From the data integrity specification:
 
