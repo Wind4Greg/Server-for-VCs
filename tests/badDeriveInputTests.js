@@ -18,7 +18,7 @@ describe("Bad Derive Inputs", function () {
             tooLong += "Winds Up!";
         }
         modDoc.credentialSubject.nickName = tooLong;
-        const content = {verifiableCredential: modDoc, selectivePointers,  options: {}};
+        const content = {verifiableCredential: modDoc, options: {selectivePointers}};
         let res = await fetch(urlBase + "credentials/derive", {
         method: "POST",
         body: JSON.stringify(content),
@@ -33,7 +33,7 @@ describe("Bad Derive Inputs", function () {
     it("Missing @context", async function () {
         const modDoc = klona(signedBase);
         delete modDoc["@context"];
-        const content = {verifiableCredential: modDoc, selectivePointers,  options: {}};
+        const content = {verifiableCredential: modDoc, options: {selectivePointers}};
         let res = await fetch(urlBase + "credentials/derive", {
         method: "POST",
         body: JSON.stringify(content),
@@ -48,7 +48,7 @@ describe("Bad Derive Inputs", function () {
     it("Missing type property", async function () {
         const modDoc = klona(signedBase);
         delete modDoc["type"];
-        const content = {verifiableCredential: modDoc, selectivePointers,  options: {}};
+        const content = {verifiableCredential: modDoc, options: {selectivePointers}};
         let res = await fetch(urlBase + "credentials/derive", {
         method: "POST",
         body: JSON.stringify(content),
@@ -63,7 +63,7 @@ describe("Bad Derive Inputs", function () {
     it("Missing credentialSubject property", async function () {
         const modDoc = klona(signedBase);
         delete modDoc["credentialSubject"];
-        const content = {verifiableCredential: modDoc, selectivePointers,  options: {}};
+        const content = {verifiableCredential: modDoc, options: {selectivePointers}};
         let res = await fetch(urlBase + "credentials/derive", {
         method: "POST",
         body: JSON.stringify(content),
@@ -78,7 +78,7 @@ describe("Bad Derive Inputs", function () {
     it("Missing issuer property", async function () {
         const modDoc = klona(signedBase);
         delete modDoc["issuer"];
-        const content = {verifiableCredential: modDoc, selectivePointers,  options: {}};
+        const content = {verifiableCredential: modDoc, options: {selectivePointers}};
         let res = await fetch(urlBase + "credentials/derive", {
         method: "POST",
         body: JSON.stringify(content),
@@ -106,7 +106,7 @@ describe("Bad Derive Inputs", function () {
     it("Missing proof property", async function () {
         const modDoc = klona(signedBase);
         delete modDoc["proof"];
-        const content = {verifiableCredential: modDoc, selectivePointers,  options: {}};
+        const content = {verifiableCredential: modDoc, options: {selectivePointers}};
         let res = await fetch(urlBase + "credentials/derive", {
         method: "POST",
         body: JSON.stringify(content),
@@ -121,7 +121,7 @@ describe("Bad Derive Inputs", function () {
     it("Missing proof.type property", async function () {
         const modDoc = klona(signedBase);
         delete modDoc.proof.type;
-        const content = {verifiableCredential: modDoc, selectivePointers,  options: {}};
+        const content = {verifiableCredential: modDoc, options: {selectivePointers}};
         let res = await fetch(urlBase + "credentials/derive", {
         method: "POST",
         body: JSON.stringify(content),
@@ -136,7 +136,7 @@ describe("Bad Derive Inputs", function () {
     it("Missing proof.proofPurpose property", async function () {
         const modDoc = klona(signedBase);
         delete modDoc.proof.proofPurpose;
-        const content = {verifiableCredential: modDoc, selectivePointers,  options: {}};
+        const content = {verifiableCredential: modDoc, options: {selectivePointers}};
         let res = await fetch(urlBase + "credentials/derive", {
         method: "POST",
         body: JSON.stringify(content),
@@ -151,7 +151,7 @@ describe("Bad Derive Inputs", function () {
     it("Missing proof.verificationMethod property", async function () {
         const modDoc = klona(signedBase);
         delete modDoc.proof.verificationMethod;
-        const content = {verifiableCredential: modDoc, selectivePointers,  options: {}};
+        const content = {verifiableCredential: modDoc, options: {selectivePointers}};
         let res = await fetch(urlBase + "credentials/derive", {
         method: "POST",
         body: JSON.stringify(content),
@@ -166,7 +166,7 @@ describe("Bad Derive Inputs", function () {
     it("Missing proof.proofValue property", async function () {
         const modDoc = klona(signedBase);
         delete modDoc.proof.proofValue;
-        const content = {verifiableCredential: modDoc, selectivePointers,  options: {}};
+        const content = {verifiableCredential: modDoc, options: {selectivePointers}};
         let res = await fetch(urlBase + "credentials/derive", {
         method: "POST",
         body: JSON.stringify(content),
@@ -181,7 +181,7 @@ describe("Bad Derive Inputs", function () {
     it("Missing proof.cryptosuite property", async function () {
         const modDoc = klona(signedBase);
         delete modDoc.proof.cryptosuite;
-        const content = {verifiableCredential: modDoc, selectivePointers,  options: {}};
+        const content = {verifiableCredential: modDoc, options: {selectivePointers}};
         let res = await fetch(urlBase + "credentials/derive", {
         method: "POST",
         body: JSON.stringify(content),
@@ -196,7 +196,7 @@ describe("Bad Derive Inputs", function () {
     it("Bad proof.proofValue", async function () {
         const modDoc = klona(signedBase);
         modDoc.proof.proofValue = "random just should not verify!";
-        const content = {verifiableCredential: modDoc, selectivePointers,  options: {}};
+        const content = {verifiableCredential: modDoc, options: {selectivePointers}};
         let res = await fetch(urlBase + "credentials/derive", {
         method: "POST",
         body: JSON.stringify(content),

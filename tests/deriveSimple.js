@@ -11,7 +11,7 @@ const selectivePointers = JSON.parse(
 
 describe("Simple Deriving", function () {
     it("With signed base and selective pointers", async function () {
-        const content = {verifiableCredential: signedBase, selectivePointers, options: {}};
+        const content = {verifiableCredential: signedBase, options: {selectivePointers}};
         let res = await fetch(urlBase + "credentials/derive", {
         method: "POST",
         body: JSON.stringify(content),

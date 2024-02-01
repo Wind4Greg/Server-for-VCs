@@ -1,6 +1,7 @@
 import express from 'express';
 import { credentialValidator, proofValidator } from './validators.js';
 import { derive } from './lib/derive.js'
+import { errorHandler } from './errorHandler.js';
 import { signBase } from './lib/signBase.js'
 import { verifyBase } from './lib/verifyBase.js'
 import { verifyDerived } from './lib/verifyDerived.js'
@@ -33,12 +34,8 @@ app.post('/credentials/issue', jsonParser, async function (req, res, next) {
             throw { type: "missingDocument" };
         }
         credentialValidator(document);
-        let options = req.body.options;
-
-        if (!options) {
-            options = {};
-        }
-        options.documentLoader = localLoader;
+        const localOptions = {};
+        localOptions.documentLoader = localLoader;
         // Check if we need context inject of data integrity per
         // https://w3c.github.io/vc-data-integrity/#context-injection
         if (!document["@context"].includes("https://www.w3.org/ns/credentials/v2")) {
@@ -47,11 +44,11 @@ app.post('/credentials/issue', jsonParser, async function (req, res, next) {
                 document["@context"].push("https://w3id.org/security/data-integrity/v2");
             }
         }
-        let mandatoryPointers = req.body.mandatoryPointers;
+        let mandatoryPointers = req.body.options?.mandatoryPointers;
         if (!mandatoryPointers) {
             mandatoryPointers = [];
         }
-        const signCred = await signBase(document, keyPair, mandatoryPointers, options);
+        const signCred = await signBase(document, keyPair, mandatoryPointers, localOptions);
         console.log(`Responding to issue request #${issue_req_count} with signed document:`);
         console.log(JSON.stringify(signCred, null, 2));
         res.status(201).json(signCred);
@@ -73,8 +70,8 @@ app.post('/credentials/verify', jsonParser, async function (req, res, next) {
             throw { type: "missingDocument" };
         }
         credentialValidator(signedDoc);
-        const options = req.body.options;
-        options.documentLoader = localLoader;
+        const localOptions = {};
+        localOptions.documentLoader = localLoader;
         if (!signedDoc.proof) {
             throw { type: "missingProof" };
         }
@@ -82,7 +79,7 @@ app.post('/credentials/verify', jsonParser, async function (req, res, next) {
         const proofValue = signedDoc.proof?.proofValue;
         let pubKey = extractPublicKey(signedDoc);
         if (isECDSA_SD_base(proofValue)) {
-            const result = await verifyBase(signedDoc, pubKey, options);
+            const result = await verifyBase(signedDoc, pubKey, localOptions);
             console.log(`Responding to verify request #${verify_req_count} Base Proof verified: ${result}`);
             let statusCode = 200;
             if (!result) {
@@ -91,7 +88,7 @@ app.post('/credentials/verify', jsonParser, async function (req, res, next) {
             res.status(statusCode).json({ checks: [], warnings: [] });
             return;
         } else { // This is a derived proof
-            const result = await verifyDerived(signedDoc, pubKey, options);
+            const result = await verifyDerived(signedDoc, pubKey, localOptions);
             console.log(`Responding to verify request #${verify_req_count} Derived Proof verified: ${result}`);
             let statusCode = 200;
             if (!result) {
@@ -113,8 +110,8 @@ app.post('/credentials/derive', jsonParser, async function (req, res, next) {
     console.log(JSON.stringify(req.body, null, 2));
     try {
         let document = req.body.verifiableCredential;
-        let selectivePointers = req.body.selectivePointers;
-        let options = req.body.options;
+        let selectivePointers = req.body.options?.selectivePointers;
+        let localOptions = req.body.options;
         if (!document) {
             throw { type: "missingDocument" };
         }
@@ -122,15 +119,13 @@ app.post('/credentials/derive', jsonParser, async function (req, res, next) {
         if (!selectivePointers) {
             throw { type: "nothingSelected"};
         }
-        if (!options) {
-            options = {};
-        }
         if (!document.proof) {
             throw { type: "missingProof" };
         }
         proofValidator(document.proof);
-        options.documentLoader = localLoader;
-        const derivedCred = await derive(document, selectivePointers, options)
+        localOptions = {};
+        localOptions.documentLoader = localLoader;
+        const derivedCred = await derive(document, selectivePointers, localOptions)
         console.log(`Responding to derive request #${derive_req_count} with derived document:`);
         console.log(JSON.stringify(derivedCred, null, 2));
         res.status(201).json(derivedCred);
@@ -147,44 +142,7 @@ app.post('/credentials/derive', jsonParser, async function (req, res, next) {
 });
 
 // Error handling here
-app.use((err, req, res, next) => {
-    console.log("Error handler received a call with error:");
-    console.error(err);
-    let errorType = err.type;
-    if (!errorType) {
-        res.status(500).json({ error: err });
-        return;
-    }
-    errorType = errorType.trim();
-    console.log(`errorType: ${errorType}`);
-    switch (errorType) {
-        case "entity.too.large":
-            res.status(400).json({ errors: [`JSON input limit of ${err.limit} exceeded`] });
-            return;
-        case "invalidCredential":
-            res.status(400).json({ errors: [err.errors[0].message] });
-            return;
-        case "invalidProof":
-            res.status(400).json({ errors: ["proof: " + err.errors[0].message] });
-            return;
-        case "missingDocument":
-            res.status(400).json({ errors: ["no credential supplied"] });
-            return;
-        case "missingProof":
-            res.status(400).json({ errors: ["no proof on credential"] });
-            return;
-        case "nothingSelected":
-            res.status(400).json({ errors: ["Nothing selected"]});
-            return;
-        case "deriveError":
-            res.status(400).json({errors: [err.message]});
-            return;
-        default:
-            res.status(500).json({ errors: ["Unknown"] });
-            return;
-    }
-})
-
+app.use(errorHandler);
 
 const host = '127.0.0.2'; // Servers local IP address.
 const port = '5555';

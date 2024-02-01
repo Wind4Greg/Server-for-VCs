@@ -19,7 +19,7 @@ describe("Bad Signing Inputs", function () {
             tooLong += "Winds Up!";
         }
         modDoc.credentialSubject.nickName = tooLong;
-        const content = {credential: modDoc, mandatoryPointers, options: {}};
+        const content = {credential: modDoc, options: {mandatoryPointers}};
         let res = await fetch(urlBase + "credentials/issue", {
         method: "POST",
         body: JSON.stringify(content),
@@ -34,7 +34,7 @@ describe("Bad Signing Inputs", function () {
     it("Missing @context", async function () {
         const modDoc = klona(document);
         delete modDoc["@context"];
-        const content = {credential: modDoc, mandatoryPointers, options: {}};
+        const content = {credential: modDoc, options: {mandatoryPointers}};
         let res = await fetch(urlBase + "credentials/issue", {
         method: "POST",
         body: JSON.stringify(content),
@@ -49,7 +49,7 @@ describe("Bad Signing Inputs", function () {
     it("Missing type property", async function () {
         const modDoc = klona(document);
         delete modDoc["type"];
-        const content = {credential: modDoc, mandatoryPointers, options: {}};
+        const content = {credential: modDoc, options: {mandatoryPointers}};
         let res = await fetch(urlBase + "credentials/issue", {
         method: "POST",
         body: JSON.stringify(content),
@@ -64,7 +64,7 @@ describe("Bad Signing Inputs", function () {
     it("Missing credentialSubject property", async function () {
         const modDoc = klona(document);
         delete modDoc["credentialSubject"];
-        const content = {credential: modDoc, mandatoryPointers, options: {}};
+        const content = {credential: modDoc, options: {mandatoryPointers}};
         let res = await fetch(urlBase + "credentials/issue", {
         method: "POST",
         body: JSON.stringify(content),
@@ -79,7 +79,7 @@ describe("Bad Signing Inputs", function () {
     it("Missing issuer property", async function () {
         const modDoc = klona(document);
         delete modDoc["issuer"];
-        const content = {credential: modDoc, mandatoryPointers, options: {}};
+        const content = {credential: modDoc, options: {mandatoryPointers}};
         let res = await fetch(urlBase + "credentials/issue", {
         method: "POST",
         body: JSON.stringify(content),
@@ -92,7 +92,7 @@ describe("Bad Signing Inputs", function () {
         assert.isNotOk(res.ok);
     });
     it("Missing document", async function () {
-        const content = {mandatoryPointers, options: {}};
+        const content = {options: {mandatoryPointers}};
         let res = await fetch(urlBase + "credentials/issue", {
         method: "POST",
         body: JSON.stringify(content),
