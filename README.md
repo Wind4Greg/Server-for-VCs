@@ -10,6 +10,19 @@ In order to interoperability test my implementations of ECDSA-SD and BBS I need 
 
 For information on my ECDSA-SD implementation see the complete documentation with example code at [ECDSA-SD-Library](https://github.com/Wind4Greg/ECDSA-SD-Library).
 
+## Implementation Notes
+
+References and techniques:
+
+* [Express.js Error Handling](https://expressjs.com/en/guide/error-handling.html) Explains working with exceptions and in particular how to write the error handler. When dealing with async function see the reference below.
+* [Using async/await in Express](https://zellwk.com/blog/async-await-express/). I'm currently using Express.js 4.x. This article explains a bit about dealing with exceptions and async functions. I use a lot of exceptions to try and keep the control flow clean and this article shows a straightforward way to do this when using async functions.
+
+As a testing/reference server I needed to have good logging capabilities so trying to use common tools and techniques:
+
+* [express logging advice](https://expressjs.com/en/advanced/best-practice-performance.html#for-app-activity)
+* [Comparing node.js logging tools](https://blog.logrocket.com/comparing-node-js-logging-tools/)
+* {Winston](https://github.com/winstonjs/winston#readme)
+
 # Notes on additional testing for ECDSA-SD
 
 Unlike `ecdsa-rdfc-2019` and `ecdsa-jcs-2019`, `ecdsa-sd-2023` has three (or four) rather than two fundamental functions to be tested. These are:
@@ -21,7 +34,7 @@ Unlike `ecdsa-rdfc-2019` and `ecdsa-jcs-2019`, `ecdsa-sd-2023` has three (or fou
 
 Note: The *verify base* and *verify derived* use the same POST `/credential/verify` endpoint. The server looks at the `proofValue` information to determine which verification function to call.
 
-## Credential Value Checking
+## Credential Basic Validation
 
 When asked to sign a credential should perform some basic sanity checks on the contents of the credential. We can get these from the VC data models.
 
@@ -54,22 +67,16 @@ From Section 4 of [Verifiable Credential Data Model 2.0](https://www.w3.org/TR/v
 * `validUntil` If present, the value of the validUntil property **MUST** be an [XMLSCHEMA11-2] dateTimeStamp string value representing the date and time the credential ceases to be valid
 * This specification defines the `credentialStatus` property for the discovery of information about the status of a verifiable credential, such as whether it is suspended or revoked.
 
-## Proof Value Checking
+## Proof Basic Validation
 
 For both base proof and derived proof the encoding is *base64url-no-pad-encoding* and **not** *base-58-btc* and starts with a `u` and **not** a 'z'. In addition the decoded proofs should start with the following bytes:
 
 * **base proof** header bytes 0xd9, 0x5d, and 0x00
 * **disclosure proof** header bytes 0xd9, 0x5d, and 0x01
 
-# Input Validation Notes
-
-Using JSON schema and AJV library to help with validation.
-
-*Note*: temporarily removed `, "issuer"` from *required* in credential schema since my own examples were missing this field.
-
 From the data integrity specification:
 
-## 2.1 Proofs
+### 2.1 Proofs
 
 ```
 id
@@ -96,7 +103,7 @@ nonce
     An OPTIONAL string value supplied by the proof creator. One use of this field is to increase privacy by decreasing linkability that is the result of deterministically generated signatures.
 ```
 
-## Refined in the ECDSA specification:
+### Refined in the ECDSA specification:
 
 2.2.1 DataIntegrityProof
 

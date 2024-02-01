@@ -6,7 +6,7 @@ const urlBase = "http://127.0.0.2:5555/";
 
 const testDataPath = './fixture-data/'
 const document = JSON.parse(
-    await readFile(new URL(testDataPath + 'dbSigned1.json', import.meta.url)));
+    await readFile(new URL(testDataPath + 'addSignedSDBase.json', import.meta.url)));
 
 
 describe("Bad Verify Inputs", function () {
