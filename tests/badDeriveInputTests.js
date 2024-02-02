@@ -2,7 +2,7 @@ import { assert } from "chai";
 import fetch from "node-fetch";
 import { klona } from "klona";
 import { readFile } from 'fs/promises'
-const urlBase = "http://127.0.0.2:5555/";
+const urlBase = "http://localhost:5150/";
 
 const testDataPath = './fixture-data/'
 const signedBase = JSON.parse(

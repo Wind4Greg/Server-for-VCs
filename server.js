@@ -142,8 +142,8 @@ app.post('/credentials/derive', jsonParser, async function (req, res, next) {
 // Error handling here
 app.use(errorHandler);
 
-const host = '127.0.0.2'; // Servers local IP address.
-const port = '5555';
+const host = 'localhost'; // Servers local IP address.
+const port = '5150';
 app.listen(port, host, function () {
     logger.info(`Example app listening on IPv4: ${host}:${port}`);
 });
