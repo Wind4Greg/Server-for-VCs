@@ -17,11 +17,15 @@ References and techniques:
 * [Express.js Error Handling](https://expressjs.com/en/guide/error-handling.html) Explains working with exceptions and in particular how to write the error handler. When dealing with async function see the reference below.
 * [Using async/await in Express](https://zellwk.com/blog/async-await-express/). I'm currently using Express.js 4.x. This article explains a bit about dealing with exceptions and async functions. I use a lot of exceptions to try and keep the control flow clean and this article shows a straightforward way to do this when using async functions.
 
-As a testing/reference server I needed to have good logging capabilities so trying to use common tools and techniques:
+As a testing/reference server I needed to have good logging capabilities so trying to use common tools and techniques. Here are the references I consulted:
 
 * [express logging advice](https://expressjs.com/en/advanced/best-practice-performance.html#for-app-activity)
 * [Comparing node.js logging tools](https://blog.logrocket.com/comparing-node-js-logging-tools/)
-* {Winston](https://github.com/winstonjs/winston#readme)
+* [Winston](https://github.com/winstonjs/winston#readme) Using this.
+* [Logform](https://github.com/winstonjs/logform?tab=readme-ov-file#json) More on winston log formats. I'm just combining "timestamp" with the JSON format.
+* [Winston daily rotate file](https://www.npmjs.com/package/winston-daily-rotate-file) will look into this once I get deployment working a bit.
+* [Winston Tutorial](https://stackify.com/winston-logging-tutorial/) Looks reasonable.
+* [How To Use Winston to Log Node.js Applications on Ubuntu 20.04](https://www.digitalocean.com/community/tutorials/how-to-use-winston-to-log-node-js-applications-on-ubuntu-20-04#step-2-customizing-the-logging-variables) Shows combining *morgan* for HTTP request logging with *winston* for logging everything else. I've not implemented something like this yet.
 
 # Notes on additional testing for ECDSA-SD
 
