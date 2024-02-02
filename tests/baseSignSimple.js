@@ -1,7 +1,7 @@
 import { assert } from "chai";
 import fetch from "node-fetch";
 import { readFile } from 'fs/promises'
-const urlBase = "http://localhost:5150/";
+import { urlBase } from './testConfig.js'
 
 const testDataPath = './fixture-data/'
 const document = JSON.parse(
