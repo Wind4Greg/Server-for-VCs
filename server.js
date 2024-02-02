@@ -6,6 +6,7 @@ import { signBase } from './lib/signBase.js'
 import { verifyBase } from './lib/verifyBase.js'
 import { verifyDerived } from './lib/verifyDerived.js'
 import { localLoader } from './documentLoader.js'
+import { logger } from './logging.js'
 import { isECDSA_SD_base, extractPublicKey, getServerKeyPair } from './helpers.js';
 
 
@@ -25,9 +26,7 @@ let derive_req_count = 0;
 // Endpoint: POST /credentials/issue, object:{credential, mandatoryPointers, options}.
 
 app.post('/credentials/issue', jsonParser, async function (req, res, next) {
-    console.log(`Received issue request #${++issue_req_count}`);
-    // Take a look at what we are receiving
-    console.log(JSON.stringify(req.body, null, 2));
+    logger.info(`Issue request #${++issue_req_count}`, {api: "issue", body: req.body, reqNum: issue_req_count});
     try {
         let document = req.body.credential;
         if (!document) {
@@ -49,10 +48,11 @@ app.post('/credentials/issue', jsonParser, async function (req, res, next) {
             mandatoryPointers = [];
         }
         const signCred = await signBase(document, keyPair, mandatoryPointers, localOptions);
-        console.log(`Responding to issue request #${issue_req_count} with signed document:`);
-        console.log(JSON.stringify(signCred, null, 2));
+        logger.info(`Response to issue request #${issue_req_count}`, {api: "issue", doc: signCred, reqNum: issue_req_count});
         res.status(201).json(signCred);
     } catch (error) {
+        error.api = 'issue';
+        error.reqNum = issue_req_count;
         return next(error);
     }
 })
@@ -61,9 +61,7 @@ app.post('/credentials/issue', jsonParser, async function (req, res, next) {
 // Endpoint: POST /credentials/verify, object: {verifiableCredential, options}
 
 app.post('/credentials/verify', jsonParser, async function (req, res, next) {
-    console.log(`Received verify request #${++verify_req_count}`);
-    // Take a look at what we are receiving
-    console.log(JSON.stringify(req.body, null, 2));
+    logger.info(`Verify request #${++verify_req_count}`, {api: "verify", body: req.body, reqNum: verify_req_count});
     const signedDoc = req.body.verifiableCredential;
     try {
         if (!signedDoc) {
@@ -80,7 +78,7 @@ app.post('/credentials/verify', jsonParser, async function (req, res, next) {
         let pubKey = extractPublicKey(signedDoc);
         if (isECDSA_SD_base(proofValue)) {
             const result = await verifyBase(signedDoc, pubKey, localOptions);
-            console.log(`Responding to verify request #${verify_req_count} Base Proof verified: ${result}`);
+            logger.info(`Responding to verify request #${verify_req_count} Base Proof verified: ${result}`, {api: "verify", reqNum: verify_req_count});
             let statusCode = 200;
             if (!result) {
                 statusCode = 400;
@@ -89,7 +87,7 @@ app.post('/credentials/verify', jsonParser, async function (req, res, next) {
             return;
         } else { // This is a derived proof
             const result = await verifyDerived(signedDoc, pubKey, localOptions);
-            console.log(`Responding to verify request #${verify_req_count} Derived Proof verified: ${result}`);
+            logger.info(`Responding to verify request #${verify_req_count} Derived Proof verified: ${result}`, {api: "verify", reqNum: verify_req_count});
             let statusCode = 200;
             if (!result) {
                 statusCode = 400;
@@ -98,6 +96,8 @@ app.post('/credentials/verify', jsonParser, async function (req, res, next) {
             return;
         }
     } catch (err) {
+        err.api = 'verify';
+        err.reqNum = verify_req_count;
         return next(err);
     }
 })
@@ -105,9 +105,7 @@ app.post('/credentials/verify', jsonParser, async function (req, res, next) {
 // Used to issue a selectively disclosed credential with derived proof
 // POST /credentials/derive, object: {verifiableCredential, selectivePointers, options}.
 app.post('/credentials/derive', jsonParser, async function (req, res, next) {
-    console.log(`Received derived request #${++derive_req_count}`);
-    // Take a look at what we are receiving
-    console.log(JSON.stringify(req.body, null, 2));
+    logger.info(`Derived request #${++derive_req_count}`, {api: "derive", body: req.body, reqNum: derive_req_count});
     try {
         let document = req.body.verifiableCredential;
         let selectivePointers = req.body.options?.selectivePointers;
@@ -126,17 +124,17 @@ app.post('/credentials/derive', jsonParser, async function (req, res, next) {
         localOptions = {};
         localOptions.documentLoader = localLoader;
         const derivedCred = await derive(document, selectivePointers, localOptions)
-        console.log(`Responding to derive request #${derive_req_count} with derived document:`);
-        console.log(JSON.stringify(derivedCred, null, 2));
+        logger.info(`Response to derive request #${derive_req_count}`, {api: "derive", doc: derivedCred, reqNum: derive_req_count});
         res.status(201).json(derivedCred);
         return
     } catch (error) {
-        console.log(`Error deriving: ${error}`);
         let err = error;
         if (!error.type) { // an exception from my ECDSA-SD library, rather than one I locally threw
             // Format it for easy handling
             err = {type: "deriveError", message: `${error}`}
         }
+        err.api = 'derive';
+        err.reqNum = derive_req_count;
         return next(err);
     }
 });
@@ -147,6 +145,6 @@ app.use(errorHandler);
 const host = '127.0.0.2'; // Servers local IP address.
 const port = '5555';
 app.listen(port, host, function () {
-    console.log(`Example app listening on IPv4: ${host}:${port}`);
+    logger.info(`Example app listening on IPv4: ${host}:${port}`);
 });
 

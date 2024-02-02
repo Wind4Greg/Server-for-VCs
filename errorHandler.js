@@ -1,15 +1,13 @@
-
+import { logger } from './logging.js';
 
 export function errorHandler(err, req, res, next) {
-    console.log("Error handler received a call with error:");
-    console.error(err);
+    logger.error("Error handler received a call", err);
     let errorType = err.type;
     if (!errorType) {
         res.status(500).json({ error: err });
         return;
     }
     errorType = errorType.trim();
-    console.log(`errorType: ${errorType}`);
     switch (errorType) {
         case "entity.too.large":
             res.status(400).json({ errors: [`JSON input limit of ${err.limit} exceeded`] });

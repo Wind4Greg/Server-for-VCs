@@ -118,6 +118,20 @@ describe("Bad Derive Inputs", function () {
         console.log(JSON.stringify(await res.json()));
         assert.isNotOk(res.ok);
     });
+    it("Nothing selected (empty selectedPointers)", async function () {
+        const modDoc = klona(signedBase);
+        const content = {verifiableCredential: modDoc, options: {}};
+        let res = await fetch(urlBase + "credentials/derive", {
+        method: "POST",
+        body: JSON.stringify(content),
+        headers: {
+            "Content-Type": "application/json",
+        },
+        });
+        console.log(`return code: ${res.status}`);
+        console.log(JSON.stringify(await res.json()));
+        assert.isNotOk(res.ok);
+    });
     it("Missing proof.type property", async function () {
         const modDoc = klona(signedBase);
         delete modDoc.proof.type;
