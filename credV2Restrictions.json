@@ -1,0 +1,16 @@
+{
+    "$id": "https://grotto-networking.com/credentialv2-0Restrictions.schema.json",
+    "title": "Unsigned V2.0 Credential additional restrictions",
+    "description": "Additional restrictions for data model v2.0 ",
+    "type": "object",
+    "properties": {
+        "validFrom": {
+            "type": "string",
+            "format": "uri"
+        },
+        "validUntil": {
+            "type": "string",
+            "format": "uri"
+        }
+    }
+}

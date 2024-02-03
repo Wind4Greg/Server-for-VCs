@@ -1,0 +1,18 @@
+{
+
+    "$id": "https://grotto-networking.com/credentialv1-1Restrictions.schema.json",
+    "title": "Unsigned V1.1 Credential additional restrictions",
+    "description": "Additional restrictions for data model v1.1 ",
+    "type": "object",
+    "properties": {
+       "issuanceDate": {
+          "type": "string",
+          "format": "date-time"
+       },
+       "expirationDate": {
+          "type": "string",
+          "format": "date-time"
+       }
+    },
+    "required": ["issuanceDate"]
+}

@@ -1,28 +1,56 @@
 {
-
-    "$id": "https://grotto-networking.com/simple-credential.schema.json",
-    "title": "UnsignedCredential",
-    "description": "A basic credential validator, data model v1.1 or v2.0",
-    "type": "object",
-    "properties": {
-       "@context": {
-        "type": "array",
-        "items": {
-           "type": ["string", "object"]}
-       },
-       "id": {
-            "type": "string",
-            "format": "uri"
-       },
-       "type": {
-            "type": ["string", "array"]
-       },
-       "credentialSubject": {
-            "type": ["object", "array"]
-       },
-       "issuer": {
-            "type": ["string", "object"]
-       }
-    },
-    "required": [ "@context", "type", "credentialSubject", "issuer"]
+     "$id": "https://grotto-networking.com/simple-credential.schema.json",
+     "title": "UnsignedCredential",
+     "description": "A basic credential validator, data model v1.1 or v2.0",
+     "type": "object",
+     "properties": {
+          "@context": {
+               "type": "array",
+               "items": {
+                    "type": ["string", "object"]
+               }
+          },
+          "id": {
+               "type": "string",
+               "format": "uri"
+          },
+          "type": {
+               "type": ["string", "array"]
+          },
+          "credentialSubject": {
+               "type": ["object", "array"]
+          },
+          "issuer": {
+               "anyOf": [
+                    {
+                         "type": "string",
+                         "format": "uri"
+                    },
+                    {
+                         "type": "object",
+                         "properties": {
+                              "id": {
+                                   "type": "string",
+                                   "format": "uri"
+                              }
+                         },
+                         "required": ["id"]
+                    }
+               ]
+          },
+          "credentialStatus": {
+               "type": "object",
+               "properties": {
+                    "id": {
+                         "type": "string",
+                         "format": "uri"
+                    },
+                    "type": {
+                         "type": ["string", "array"]
+                    }
+               },
+               "required": ["type"]
+          }
+     },
+     "required": ["@context", "type", "credentialSubject", "issuer"]
 }

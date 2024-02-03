@@ -42,6 +42,11 @@ Note: The *verify base* and *verify derived* use the same POST `/credential/veri
 
 When asked to sign a credential should perform some basic sanity checks on the contents of the credential. We can get these from the VC data models.
 
+JSON schema references:
+
+* [JSON Schema](https://json-schema.org/)
+* [Working with Multiple Types](https://cswr.github.io/JsonSchema/spec/multiple_types/)
+
 ### VC Data Model 1.1
 
 See Section 4 of [Verifiable Credential Data Model v1.1](https://www.w3.org/TR/vc-data-model/#basic-concepts).
