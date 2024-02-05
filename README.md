@@ -45,7 +45,9 @@ When asked to sign a credential should perform some basic sanity checks on the c
 JSON schema references:
 
 * [JSON Schema](https://json-schema.org/)
-* [Working with Multiple Types](https://cswr.github.io/JsonSchema/spec/multiple_types/)
+* [Working with Multiple Types](https://cswr.github.io/JsonSchema/spec/multiple_types/), shows how to deal with properties that could have multiple types such as either a `string` or an `array`.
+* [Generic Keywords](https://cswr.github.io/JsonSchema/spec/generic_keywords/), includes the useful `anyOf` keyword/construct.
+* [Schema Valdator](https://www.jsonschemavalidator.net/) a nice site to interactively test schemas and data.
 
 ### VC Data Model 1.1
 

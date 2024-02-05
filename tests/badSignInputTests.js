@@ -91,6 +91,36 @@ describe("Bad Signing Inputs", function () {
         console.log(JSON.stringify(await res.json()));
         assert.isNotOk(res.ok);
     });
+    it("Issuer is empty string", async function () {
+        const modDoc = klona(document);
+        modDoc["issuer"] = "";
+        const content = {credential: modDoc, options: {mandatoryPointers}};
+        let res = await fetch(urlBase + "credentials/issue", {
+        method: "POST",
+        body: JSON.stringify(content),
+        headers: {
+            "Content-Type": "application/json",
+        },
+        });
+        console.log(`return code: ${res.status}`);
+        console.log(JSON.stringify(await res.json()));
+        assert.isNotOk(res.ok);
+    });
+    it("Issuer is object without id", async function () {
+        const modDoc = klona(document);
+        modDoc["issuer"] = {stuff: "need to have an id!"};
+        const content = {credential: modDoc, options: {mandatoryPointers}};
+        let res = await fetch(urlBase + "credentials/issue", {
+        method: "POST",
+        body: JSON.stringify(content),
+        headers: {
+            "Content-Type": "application/json",
+        },
+        });
+        console.log(`return code: ${res.status}`);
+        console.log(JSON.stringify(await res.json()));
+        assert.isNotOk(res.ok);
+    });
     it("Missing document", async function () {
         const content = {options: {mandatoryPointers}};
         let res = await fetch(urlBase + "credentials/issue", {
