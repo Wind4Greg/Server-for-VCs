@@ -4,7 +4,7 @@ This relatively small development server implements a limited subset of the [Ver
 
 If you are new to using JavaScript for servers you may want to take a look at the my old [course materials](https://www.grotto-networking.com/WebSystems/WebSystemsMaterials.html) which covers the basics of [Node.js](https://nodejs.org/en), [Express.js](https://expressjs.com/), [JSON Schema](https://json-schema.org/), [AJV](https://github.com/ajv-validator/ajv), and testing with [Mocha](https://mochajs.org/).
 
- Included in the `lib` directory are functions I implementing ECDSA-SD and BBS VC processing. I've also set up a local (JSON-LD) context loader in `documentLoader.js` the various supported contexts are in the directory `contexts`.
+ Included in the `lib` directory are functions I implemented for ECDSA-SD and BBS VC processing. I've also set up a local (JSON-LD) context loader in `documentLoader.js`, and the various supported contexts are in the directory `contexts`.
 
 For information on my ECDSA-SD implementation see the complete documentation with example code at [ECDSA-SD-Library](https://github.com/Wind4Greg/ECDSA-SD-Library), and for my BBS-VC implementation see [BBS-VC-Library](https://github.com/Wind4Greg/BBS-VC-Library) which uses my JavaScript implementation of [BBS signatures](https://www.npmjs.com/package/@grottonetworking/bbs-signatures)
 
