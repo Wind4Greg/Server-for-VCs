@@ -10,7 +10,7 @@ const document = JSON.parse(
 const mandatoryPointers = JSON.parse(
         await readFile(new URL(testDataPath + 'windMandatory.json', import.meta.url)));
 // const mandatoryPointers = [];
-describe("Simple Base Signing", function () {
+describe("BBS: Simple Base Signing", function () {
     it("With document and mandatory pointers", async function () {
         const content = {credential: document, options: {mandatoryPointers}};
         let res = await fetch(urlBase + "BBS/credentials/issue", {

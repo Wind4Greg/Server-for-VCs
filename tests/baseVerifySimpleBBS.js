@@ -9,7 +9,7 @@ const fileName = 'addSignedSDBaseBBS.json';
 const signedBase = JSON.parse(
     await readFile(new URL(testDataPath + fileName, import.meta.url)));
 
-describe("Simple Base Verify", function () {
+describe("BBS: Simple Base Verify", function () {
     it("With signed base document", async function () {
         const content = {verifiableCredential: signedBase, options: {}};
         let res = await fetch(urlBase + "BBS/credentials/verify", {

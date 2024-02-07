@@ -9,7 +9,7 @@ const signedBase = JSON.parse(
 const selectivePointers = JSON.parse(
         await readFile(new URL(testDataPath + 'windSelective.json', import.meta.url)));
 
-describe("Simple Deriving BBS", function () {
+describe("BBS: Simple Deriving", function () {
     it("With signed base and selective pointers", async function () {
         const content = {verifiableCredential: signedBase, options: {selectivePointers}};
         let res = await fetch(urlBase + "BBS/credentials/derive", {
