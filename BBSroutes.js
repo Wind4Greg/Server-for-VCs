@@ -1,34 +1,35 @@
+/*
+    Implements BBS end points in a way paralleling the ECDSA-SD endpoints
+*/
 import express from 'express';
 import { credentialValidator, proofValidator } from './validators.js';
-import { derive } from './lib/derive.js'
-import { errorHandler } from './errorHandler.js';
-import { signBase } from './lib/signBase.js'
-import { verifyBase } from './lib/verifyBase.js'
-import { verifyDerived } from './lib/verifyDerived.js'
+import { derive } from './lib/BBSderive.js'
+import { signBase } from './lib/BBSsignBase.js'
+import { verifyBase } from './lib/BBSverifyBase.js'
+import { verifyDerived } from './lib/BBSverifyDerived.js'
 import { localLoader } from './documentLoader.js'
 import { logger } from './logging.js'
-import { isECDSA_SD_base, extractPublicKey, getServerKeyPair } from './helpers.js';
-import { bbsRouter } from './BBSroutes.js';
+import { isBBS_base, extractPublicKey, getServerKeyPairBBS } from './helpers.js';
+import { API_ID_BBS_SHA, prepareGenerators } from '@grottonetworking/bbs-signatures'
 
-
-// JSON input protection
-let jsonParser = express.json({ limit: 10000 }); // 10KB
+// Pre-compute BBS generators for up to 100 messages
+const gens = await prepareGenerators(101, API_ID_BBS_SHA);
 
 // Obtain key material and process into byte array format
-const keyPair = await getServerKeyPair();
+const keyPair = await getServerKeyPairBBS();
 
-const app = express();
+export const bbsRouter = express.Router()
+
 let issue_req_count = 0;
 let verify_req_count = 0;
 let derive_req_count = 0;
 
-app.use(jsonParser);
 
-// Used in ECDSA-SD to add a **base proof** to an unsigned credential
+// Used in BBS to add a **base proof** to an unsigned credential
 // Endpoint: POST /credentials/issue, object:{credential, mandatoryPointers, options}.
 
-app.post('/credentials/issue', async function (req, res, next) {
-    logger.info(`Issue request #${++issue_req_count}`, {api: "issue", body: req.body, reqNum: issue_req_count});
+bbsRouter.post('/credentials/issue', async function (req, res, next) {
+    logger.info(`Issue request #${++issue_req_count}`, {api: "BBSissue", body: req.body, reqNum: issue_req_count});
     try {
         let document = req.body.credential;
         if (!document) {
@@ -49,21 +50,21 @@ app.post('/credentials/issue', async function (req, res, next) {
         if (!mandatoryPointers) {
             mandatoryPointers = [];
         }
-        const signCred = await signBase(document, keyPair, mandatoryPointers, localOptions);
-        logger.info(`Response to issue request #${issue_req_count}`, {api: "issue", doc: signCred, reqNum: issue_req_count});
+        const signCred = await signBase(document, keyPair, mandatoryPointers, localOptions, gens);
+        logger.info(`Response to issue request #${issue_req_count}`, {api: "BBSissue", doc: signCred, reqNum: issue_req_count});
         res.status(201).json(signCred);
     } catch (error) {
-        error.api = 'issue';
+        error.api = 'BBSissue';
         error.reqNum = issue_req_count;
         return next(error);
     }
 })
 
-// Used to verify a derived credential, or a credential with a signed base proof
+// Used to verify a BBS derived credential, or a credential with a signed base proof
 // Endpoint: POST /credentials/verify, object: {verifiableCredential, options}
 
-app.post('/credentials/verify', async function (req, res, next) {
-    logger.info(`Verify request #${++verify_req_count}`, {api: "verify", body: req.body, reqNum: verify_req_count});
+bbsRouter.post('/credentials/verify', async function (req, res, next) {
+    logger.info(`Verify request #${++verify_req_count}`, {api: "BBSverify", body: req.body, reqNum: verify_req_count});
     const signedDoc = req.body.verifiableCredential;
     try {
         if (!signedDoc) {
@@ -78,9 +79,9 @@ app.post('/credentials/verify', async function (req, res, next) {
         proofValidator(signedDoc.proof);
         const proofValue = signedDoc.proof?.proofValue;
         let pubKey = extractPublicKey(signedDoc);
-        if (isECDSA_SD_base(proofValue)) {
-            const result = await verifyBase(signedDoc, pubKey, localOptions);
-            logger.info(`Responding to verify request #${verify_req_count} Base Proof verified: ${result}`, {api: "verify", reqNum: verify_req_count});
+        if (isBBS_base(proofValue)) {
+            const result = await verifyBase(signedDoc, pubKey, localOptions, gens);
+            logger.info(`Responding to verify request #${verify_req_count} Base Proof verified: ${result}`, {api: "BBSverify", reqNum: verify_req_count});
             let statusCode = 200;
             if (!result) {
                 statusCode = 400;
@@ -88,8 +89,8 @@ app.post('/credentials/verify', async function (req, res, next) {
             res.status(statusCode).json({ checks: [], warnings: [] });
             return;
         } else { // This is a derived proof
-            const result = await verifyDerived(signedDoc, pubKey, localOptions);
-            logger.info(`Responding to verify request #${verify_req_count} Derived Proof verified: ${result}`, {api: "verify", reqNum: verify_req_count});
+            const result = await verifyDerived(signedDoc, pubKey, localOptions, gens);
+            logger.info(`Responding to verify request #${verify_req_count} Derived Proof verified: ${result}`, {api: "BBSverify", reqNum: verify_req_count});
             let statusCode = 200;
             if (!result) {
                 statusCode = 400;
@@ -98,16 +99,16 @@ app.post('/credentials/verify', async function (req, res, next) {
             return;
         }
     } catch (err) {
-        err.api = 'verify';
+        err.api = 'BBSverify';
         err.reqNum = verify_req_count;
         return next(err);
     }
 })
 
-// Used to issue a selectively disclosed credential with derived proof
+// Used to issue a selectively disclosed BBS credential with derived proof
 // POST /credentials/derive, object: {verifiableCredential, selectivePointers, options}.
-app.post('/credentials/derive', async function (req, res, next) {
-    logger.info(`Derived request #${++derive_req_count}`, {api: "derive", body: req.body, reqNum: derive_req_count});
+bbsRouter.post('/credentials/derive', async function (req, res, next) {
+    logger.info(`Derived request #${++derive_req_count}`, {api: "BBSderive", body: req.body, reqNum: derive_req_count});
     try {
         let document = req.body.verifiableCredential;
         let selectivePointers = req.body.options?.selectivePointers;
@@ -125,31 +126,18 @@ app.post('/credentials/derive', async function (req, res, next) {
         proofValidator(document.proof);
         localOptions = {};
         localOptions.documentLoader = localLoader;
-        const derivedCred = await derive(document, selectivePointers, localOptions)
-        logger.info(`Response to derive request #${derive_req_count}`, {api: "derive", doc: derivedCred, reqNum: derive_req_count});
+        const derivedCred = await derive(document, selectivePointers, localOptions, gens)
+        logger.info(`Response to derive request #${derive_req_count}`, {api: "BBSderive", doc: derivedCred, reqNum: derive_req_count});
         res.status(201).json(derivedCred);
         return
     } catch (error) {
         let err = error;
-        if (!error.type) { // an exception from my ECDSA-SD library, rather than one I locally threw
+        if (!error.type) { // an exception from my BBS-VC library, rather than one I locally threw
             // Format it for easy handling
             err = {type: "deriveError", message: `${error}`}
         }
-        err.api = 'derive';
+        err.api = 'BBSderive';
         err.reqNum = derive_req_count;
         return next(err);
     }
 });
-
-// Add BBS end points
-app.use('/BBS', bbsRouter);
-
-// Error handling here
-app.use(errorHandler);
-
-const host = 'localhost'; // Servers local IP address.
-const port = '5150';
-app.listen(port, host, function () {
-    logger.info(`Example app listening on IPv4: ${host}:${port}`);
-});
-
