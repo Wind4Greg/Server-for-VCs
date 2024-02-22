@@ -1,11 +1,13 @@
 import { logger } from './logging.js';
 
 export function errorHandler(err, req, res, next) {
-    logger.error("Error handler received a call", err);
     let errorType = err.type;
     if (!errorType) {
+        logger.error("Error handler received an unknown type (500 return)", err);
         res.status(500).json({ error: err });
         return;
+    } else {
+        logger.error("Error handler received a known type", err);
     }
     errorType = errorType.trim();
     switch (errorType) {
