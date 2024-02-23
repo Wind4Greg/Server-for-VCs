@@ -93,7 +93,12 @@ app.post('/credentials/verify', async function (req, res, next) {
             res.status(statusCode).json({ checks: [], warnings: [] });
             return;
         }
-    } catch (err) {
+    } catch (error) {
+        let err = error;
+        if (!error.type) { // an exception from my ECDSA-SD library, rather than one I locally threw
+            // Format it for easy handling
+            err = {type: "verifyError", message: `${error}`}
+        }
         err.api = 'verify';
         err.reqNum = verify_req_count;
         return next(err);
@@ -136,7 +141,12 @@ app.post('/credentials/verifyBase', async function (req, res, next) {
             res.status(400).json({ checks: [], warnings: [] });
             return;
         }
-    } catch (err) {
+    } catch (error) {
+        let err = error;
+        if (!error.type) { // an exception from my ECDSA-SD library, rather than one I locally threw
+            // Format it for easy handling
+            err = {type: "verifyBaseError", message: `${error}`}
+        }
         err.api = 'verifyBase';
         err.reqNum = verifyBase_req_count;
         return next(err);

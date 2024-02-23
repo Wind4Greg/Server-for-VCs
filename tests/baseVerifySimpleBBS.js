@@ -12,7 +12,7 @@ const signedBase = JSON.parse(
 describe("BBS: Simple Base Verify", function () {
     it("With signed base document", async function () {
         const content = {verifiableCredential: signedBase, options: {}};
-        let res = await fetch(urlBase + "BBS/credentials/verify", {
+        let res = await fetch(urlBase + "BBS/credentials/verifyBase", {
         method: "POST",
         body: JSON.stringify(content),
         headers: {

@@ -29,6 +29,8 @@ export function errorHandler(err, req, res, next) {
         case "nothingSelected":
             res.status(400).json({ errors: ["Nothing selected"] });
             return;
+        case "verifyError":
+        case "verifyBaseError":
         case "deriveError":
             res.status(400).json({ errors: [err.message] });
             return;
