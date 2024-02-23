@@ -18,7 +18,7 @@ describe("Bad Verify Inputs", function () {
         }
         modDoc.credentialSubject.nickName = tooLong;
         const content = {verifiableCredential: modDoc, options: {}};
-        let res = await fetch(urlBase + "credentials/verify", {
+        let res = await fetch(urlBase + "credentials/verifyBase", {
         method: "POST",
         body: JSON.stringify(content),
         headers: {
@@ -33,7 +33,7 @@ describe("Bad Verify Inputs", function () {
         const modDoc = klona(document);
         delete modDoc["@context"];
         const content = {verifiableCredential: modDoc, options: {}};
-        let res = await fetch(urlBase + "credentials/verify", {
+        let res = await fetch(urlBase + "credentials/verifyBase", {
         method: "POST",
         body: JSON.stringify(content),
         headers: {
@@ -48,7 +48,7 @@ describe("Bad Verify Inputs", function () {
         const modDoc = klona(document);
         delete modDoc["type"];
         const content = {verifiableCredential: modDoc, options: {}};
-        let res = await fetch(urlBase + "credentials/verify", {
+        let res = await fetch(urlBase + "credentials/verifyBase", {
         method: "POST",
         body: JSON.stringify(content),
         headers: {
@@ -63,7 +63,7 @@ describe("Bad Verify Inputs", function () {
         const modDoc = klona(document);
         delete modDoc["credentialSubject"];
         const content = {verifiableCredential: modDoc, options: {}};
-        let res = await fetch(urlBase + "credentials/verify", {
+        let res = await fetch(urlBase + "credentials/verifyBase", {
         method: "POST",
         body: JSON.stringify(content),
         headers: {
@@ -78,7 +78,7 @@ describe("Bad Verify Inputs", function () {
         const modDoc = klona(document);
         delete modDoc["issuer"];
         const content = {verifiableCredential: modDoc, options: {}};
-        let res = await fetch(urlBase + "credentials/verify", {
+        let res = await fetch(urlBase + "credentials/verifyBase", {
         method: "POST",
         body: JSON.stringify(content),
         headers: {
@@ -91,7 +91,7 @@ describe("Bad Verify Inputs", function () {
     });
     it("Missing document", async function () {
         const content = {options: {}};
-        let res = await fetch(urlBase + "credentials/verify", {
+        let res = await fetch(urlBase + "credentials/verifyBase", {
         method: "POST",
         body: JSON.stringify(content),
         headers: {
@@ -106,7 +106,7 @@ describe("Bad Verify Inputs", function () {
         const modDoc = klona(document);
         delete modDoc["proof"];
         const content = {verifiableCredential: modDoc, options: {}};
-        let res = await fetch(urlBase + "credentials/verify", {
+        let res = await fetch(urlBase + "credentials/verifyBase", {
         method: "POST",
         body: JSON.stringify(content),
         headers: {
@@ -121,7 +121,7 @@ describe("Bad Verify Inputs", function () {
         const modDoc = klona(document);
         delete modDoc.proof.type;
         const content = {verifiableCredential: modDoc, options: {}};
-        let res = await fetch(urlBase + "credentials/verify", {
+        let res = await fetch(urlBase + "credentials/verifyBase", {
         method: "POST",
         body: JSON.stringify(content),
         headers: {
@@ -136,7 +136,7 @@ describe("Bad Verify Inputs", function () {
         const modDoc = klona(document);
         delete modDoc.proof.proofPurpose;
         const content = {verifiableCredential: modDoc, options: {}};
-        let res = await fetch(urlBase + "credentials/verify", {
+        let res = await fetch(urlBase + "credentials/verifyBase", {
         method: "POST",
         body: JSON.stringify(content),
         headers: {
@@ -151,7 +151,7 @@ describe("Bad Verify Inputs", function () {
         const modDoc = klona(document);
         delete modDoc.proof.verificationMethod;
         const content = {verifiableCredential: modDoc, options: {}};
-        let res = await fetch(urlBase + "credentials/verify", {
+        let res = await fetch(urlBase + "credentials/verifyBase", {
         method: "POST",
         body: JSON.stringify(content),
         headers: {
@@ -166,7 +166,7 @@ describe("Bad Verify Inputs", function () {
         const modDoc = klona(document);
         delete modDoc.proof.proofValue;
         const content = {verifiableCredential: modDoc, options: {}};
-        let res = await fetch(urlBase + "credentials/verify", {
+        let res = await fetch(urlBase + "credentials/verifyBase", {
         method: "POST",
         body: JSON.stringify(content),
         headers: {
@@ -181,7 +181,7 @@ describe("Bad Verify Inputs", function () {
         const modDoc = klona(document);
         delete modDoc.proof.cryptosuite;
         const content = {verifiableCredential: modDoc, options: {}};
-        let res = await fetch(urlBase + "credentials/verify", {
+        let res = await fetch(urlBase + "credentials/verifyBase", {
         method: "POST",
         body: JSON.stringify(content),
         headers: {

@@ -20,6 +20,7 @@ const keyPair = await getServerKeyPair();
 const app = express();
 let issue_req_count = 0;
 let verify_req_count = 0;
+let verifyBase_req_count = 0;
 let derive_req_count = 0;
 
 app.use(jsonParser);
@@ -59,7 +60,7 @@ app.post('/credentials/issue', async function (req, res, next) {
     }
 })
 
-// Used to verify a derived credential, or a credential with a signed base proof
+// Used to verify a derived credential
 // Endpoint: POST /credentials/verify, object: {verifiableCredential, options}
 
 app.post('/credentials/verify', async function (req, res, next) {
@@ -79,13 +80,8 @@ app.post('/credentials/verify', async function (req, res, next) {
         const proofValue = signedDoc.proof?.proofValue;
         let pubKey = extractPublicKey(signedDoc);
         if (isECDSA_SD_base(proofValue)) {
-            const result = await verifyBase(signedDoc, pubKey, localOptions);
-            logger.info(`Responding to verify request #${verify_req_count} Base Proof verified: ${result}`, {api: "verify", reqNum: verify_req_count});
-            let statusCode = 200;
-            if (!result) {
-                statusCode = 400;
-            }
-            res.status(statusCode).json({ checks: [], warnings: [] });
+            logger.info(`Responding to verify request #${verify_req_count} Not a Derived Proof`, {api: "verify", reqNum: verify_req_count});
+            res.status(400).json({ checks: [], warnings: [] });
             return;
         } else { // This is a derived proof
             const result = await verifyDerived(signedDoc, pubKey, localOptions);
@@ -100,6 +96,49 @@ app.post('/credentials/verify', async function (req, res, next) {
     } catch (err) {
         err.api = 'verify';
         err.reqNum = verify_req_count;
+        return next(err);
+    }
+})
+
+// Used to verify a credential with a signed base proof
+// Endpoint: POST /credentials/verifyBase, object: {verifiableCredential, options}
+
+app.post('/credentials/verifyBase', async function (req, res, next) {
+    logger.info(`VerifyBase request #${++verifyBase_req_count}`,
+      {api: "verifyBase", body: req.body, reqNum: verifyBase_req_count});
+    const signedDoc = req.body.verifiableCredential;
+    try {
+        if (!signedDoc) {
+            throw { type: "missingDocument" };
+        }
+        credentialValidator(signedDoc);
+        const localOptions = {};
+        localOptions.documentLoader = localLoader;
+        if (!signedDoc.proof) {
+            throw { type: "missingProof" };
+        }
+        proofValidator(signedDoc.proof);
+        const proofValue = signedDoc.proof?.proofValue;
+        let pubKey = extractPublicKey(signedDoc);
+        if (isECDSA_SD_base(proofValue)) {
+            const result = await verifyBase(signedDoc, pubKey, localOptions);
+            logger.info(`Responding to verifyBase request #${verifyBase_req_count} Base Proof verified: ${result}`,
+              {api: "verifyBase", reqNum: verifyBase_req_count});
+            let statusCode = 200;
+            if (!result) {
+                statusCode = 400;
+            }
+            res.status(statusCode).json({ checks: [], warnings: [] });
+            return;
+        } else { // This is a derived proof
+            logger.info(`Responding to verifyBase request #${verifyBase_req_count} Not a Base Proof`,
+              {api: "verifyBase", reqNum: verifyBase_req_count});
+            res.status(400).json({ checks: [], warnings: [] });
+            return;
+        }
+    } catch (err) {
+        err.api = 'verifyBase';
+        err.reqNum = verifyBase_req_count;
         return next(err);
     }
 })
