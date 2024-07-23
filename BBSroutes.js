@@ -78,7 +78,7 @@ bbsRouter.post('/credentials/verify', async function (req, res, next) {
         if (!signedDoc.proof) {
             throw { type: "missingProof" };
         }
-        proofValidator(signedDoc.proof);
+        proofValidator(signedDoc.proof, req.body.options);
         const proofValue = signedDoc.proof?.proofValue;
         let pubKey = extractPublicKey(signedDoc);
         if (isBBS_base(proofValue)) {
@@ -100,6 +100,8 @@ bbsRouter.post('/credentials/verify', async function (req, res, next) {
     } catch (err) {
         err.api = 'BBSverify';
         err.reqNum = verify_req_count;
+        err.type = "invalidProof";
+        // console.log(err);
         return next(err);
     }
 })

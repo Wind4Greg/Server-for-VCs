@@ -48,10 +48,34 @@ const proofSchema = JSON.parse(
 
 const proofValidate = ajv.compile(proofSchema);
 
-export function proofValidator(cred) {
-    const valid = proofValidate(cred)
+export function proofValidator(proof, options) {
+    const valid = proofValidate(proof)
     if (!valid) {
         throw {type: "invalidProof",
                 errors: proofValidate.errors};
+    }
+    if (!options) { // skip the rest of these tests if options is not defined
+        return;
+    }
+    if (options.domain) {
+        if(proof.domain !== options.domain) {
+            throw {type: "invalidProof",
+                errors: "Domain mismatch error"
+            }
+        }
+    }
+    if (options.challenge) {
+        if(proof.challenge !== options.challenge) {
+            throw {type: "invalidProof",
+                errors: "Challenge mismatch error"
+            }
+        }
+    }
+    if (options.expectedProofPurpose) {
+        if(proof.proofPurpose !== options.expectedProofPurpose) {
+            throw {type: "invalidProof",
+                errors: "ProofPurpose mismatch error"
+            }
+        }
     }
 }

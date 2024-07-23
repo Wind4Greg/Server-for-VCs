@@ -11,10 +11,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@grottonetworking/bbs-signatures": "^0.1.5",
     "@noble/curves": "^1.1.0",
     "@noble/hashes": "^1.3.1",
-    "ajv": "^8.12.0",
-    "ajv-formats": "^2.1.1",
+    "ajv": "^8.17.1",
+    "ajv-formats": "^3.0.1",
     "cbor": "^9.0.1",
     "express": "^4.18.2",
     "json-pointer": "^0.6.2",
@@ -22,8 +23,7 @@
     "klona": "^2.0.6",
     "multiformats": "^12.0.1",
     "uuid": "^9.0.1",
-    "winston": "^3.11.0",
-    "@grottonetworking/bbs-signatures": "^0.1.5"
+    "winston": "^3.11.0"
   },
   "devDependencies": {
     "chai": "^5.0.3",

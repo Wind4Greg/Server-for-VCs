@@ -76,7 +76,7 @@ app.post('/credentials/verify', async function (req, res, next) {
         if (!signedDoc.proof) {
             throw { type: "missingProof" };
         }
-        proofValidator(signedDoc.proof);
+        proofValidator(signedDoc.proof, req.body.options);
         const proofValue = signedDoc.proof?.proofValue;
         let pubKey = extractPublicKey(signedDoc);
         if (isECDSA_SD_base(proofValue)) {

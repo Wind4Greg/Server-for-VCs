@@ -18,7 +18,12 @@ export function errorHandler(err, req, res, next) {
             res.status(400).json({ errors: [err.errors[0].message] });
             return;
         case "invalidProof":
-            res.status(400).json({ errors: ["proof: " + err.errors[0].message] });
+            if (err.errors) {
+                res.status(400).json({ errors: ["proof: " + err.errors[0].message] });
+            } else  {
+                res.status(400).json({ errors: ["proof: invalid"] });
+            }
+
             return;
         case "missingDocument":
             res.status(400).json({ errors: ["no credential supplied"] });
