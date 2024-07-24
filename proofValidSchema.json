@@ -43,7 +43,7 @@
      },
      "cryptosuite": {
           "description": "Add cryptosuite names that you can support",
-          "enum": ["ecdsa-sd-2023", "bbs-2023"]
+          "enum": ["ecdsa-sd-2023", "bbs-2023", "ecdsa-jcs-2019"]
      }
 
     },

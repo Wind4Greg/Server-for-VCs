@@ -23,7 +23,6 @@ export function errorHandler(err, req, res, next) {
             } else  {
                 res.status(400).json({ errors: ["proof: invalid"] });
             }
-
             return;
         case "missingDocument":
             res.status(400).json({ errors: ["no credential supplied"] });

@@ -9,6 +9,7 @@ import { localLoader } from './documentLoader.js'
 import { logger } from './logging.js'
 import { isECDSA_SD_base, extractPublicKey, getServerKeyPair } from './helpers.js';
 import { bbsRouter } from './BBSroutes.js';
+import { ecdsa_jcsRouter } from './ECDSA_JCS_Routes.js';
 
 
 // JSON input protection
@@ -192,6 +193,9 @@ app.post('/credentials/derive', async function (req, res, next) {
 
 // Add BBS end points
 app.use('/BBS', bbsRouter);
+
+// Add ECDSA-JCS end points
+app.use('/ECDSA-JCS', ecdsa_jcsRouter);
 
 // Error handling here
 app.use(errorHandler);

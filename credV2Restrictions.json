@@ -6,11 +6,11 @@
     "properties": {
         "validFrom": {
             "type": "string",
-            "format": "uri"
+            "format": "date-time"
         },
         "validUntil": {
             "type": "string",
-            "format": "uri"
+            "format": "date-time"
         }
     }
 }
