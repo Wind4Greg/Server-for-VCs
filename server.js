@@ -10,6 +10,7 @@ import { logger } from './logging.js'
 import { isECDSA_SD_base, extractPublicKey, getServerKeyPair } from './helpers.js';
 import { bbsRouter } from './BBSroutes.js';
 import { ecdsa_jcsRouter } from './ECDSA_JCS_Routes.js';
+import { eddsa_jcsRouter } from './EdDSA_JCS_Routes.js';
 
 
 // JSON input protection
@@ -196,6 +197,9 @@ app.use('/BBS', bbsRouter);
 
 // Add ECDSA-JCS end points
 app.use('/ECDSA-JCS', ecdsa_jcsRouter);
+
+// Add EdDSA-JCS end points
+app.use('/EdDSA-JCS', eddsa_jcsRouter);
 
 // Error handling here
 app.use(errorHandler);

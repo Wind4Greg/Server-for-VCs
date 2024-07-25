@@ -38,10 +38,10 @@ export function extractPublicKey(signedDoc) {
     return pbk;
 }
 
-export async function getServerKeyPair() {
+export async function getServerKeyPair(fname="SDKeyMaterial.json") {
     // Obtain key material and process into byte array format
     const keyMaterial = JSON.parse(
-        await readFile(new URL('./SDKeyMaterial.json', import.meta.url)))
+        await readFile(new URL('./' + fname, import.meta.url)))
     // Sample long term issuer signing key
     const keyPair = {}
     keyPair.priv = base58btc.decode(keyMaterial.privateKeyMultibase).slice(2)
