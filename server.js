@@ -11,6 +11,7 @@ import { isECDSA_SD_base, extractPublicKey, getServerKeyPair } from './helpers.j
 import { bbsRouter } from './BBSroutes.js';
 import { ecdsa_jcsRouter } from './ECDSA_JCS_Routes.js';
 import { eddsa_jcsRouter } from './EdDSA_JCS_Routes.js';
+import { ecdsa_rdfcRouter } from './ECDSA_RDFC_Routes.js';
 
 
 // JSON input protection
@@ -200,6 +201,9 @@ app.use('/ECDSA-JCS', ecdsa_jcsRouter);
 
 // Add EdDSA-JCS end points
 app.use('/EdDSA-JCS', eddsa_jcsRouter);
+
+// Add ECDSA-RDFC end points
+app.use('/ECDSA-RDFC', ecdsa_rdfcRouter);
 
 // Error handling here
 app.use(errorHandler);
