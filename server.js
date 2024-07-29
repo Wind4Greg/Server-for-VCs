@@ -12,6 +12,7 @@ import { bbsRouter } from './BBSroutes.js';
 import { ecdsa_jcsRouter } from './ECDSA_JCS_Routes.js';
 import { eddsa_jcsRouter } from './EdDSA_JCS_Routes.js';
 import { ecdsa_rdfcRouter } from './ECDSA_RDFC_Routes.js';
+import { eddsa_rdfcRouter } from './EdDSA_RDFC_Routes.js';
 
 
 // JSON input protection
@@ -204,6 +205,9 @@ app.use('/EdDSA-JCS', eddsa_jcsRouter);
 
 // Add ECDSA-RDFC end points
 app.use('/ECDSA-RDFC', ecdsa_rdfcRouter);
+
+// Add EdDSA-RDFC end points
+app.use('/EdDSA-RDFC', eddsa_rdfcRouter);
 
 // Error handling here
 app.use(errorHandler);

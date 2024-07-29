@@ -33,6 +33,9 @@ export function errorHandler(err, req, res, next) {
         case "nothingSelected":
             res.status(400).json({ errors: ["Nothing selected"] });
             return;
+        case "cryptosuiteMismatch":
+            res.status(400).json({ errors:  ["cryptosuite not appropriate for  endpoint"]});
+            return;
         case "verifyError":
         case "verifyBaseError":
         case "deriveError":
