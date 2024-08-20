@@ -38,7 +38,6 @@ eddsa_rdfcRouter.post('/credentials/issue', async function (req, res, next) {
             }
         }
         const signCred = await eddsa_rdfc_sign(document, keyPair, localOptions);
-        console.log(JSON.stringify(signCred, null, 2));
         logger.info(`Response to issue request #${issue_req_count}`, {api: "EdDSA_RDFCissue", doc: signCred, reqNum: issue_req_count});
         res.status(201).json(signCred);
     } catch (error) {
