@@ -19,13 +19,9 @@
   "proof": {
     "type": "DataIntegrityProof",
     "cryptosuite": "eddsa-rdfc-2022",
-    "created": "2024-07-29T23:32:28.226Z",
+    "created": "2024-08-20T18:30:20.522Z",
     "verificationMethod": "did:key:z6MktgKTsu1QhX6QPbyqG6geXdw6FQCZBPq7uQpieWbiQiG7#z6MktgKTsu1QhX6QPbyqG6geXdw6FQCZBPq7uQpieWbiQiG7",
     "proofPurpose": "assertionMethod",
-    "@context": [
-      "https://www.w3.org/ns/credentials/v2",
-      "https://www.w3.org/ns/credentials/examples/v2"
-    ],
-    "proofValue": "zFL49FizbPtoQtcm49q6ggezceomjQbq88rZY3vvBM8u49V2mhngN9QCzAK4fw8FTR9ao1HeAsrzWqfMJyxNJGA7"
+    "proofValue": "z5uEFkwkTdLi4N54vG6W7PVa2ob9oRwQv2sq4VsU8DA6HxiuyPVxMn1xaRSiV1MHLnncvj3D1DXGQXfufx4ksjXgm"
   }
 }

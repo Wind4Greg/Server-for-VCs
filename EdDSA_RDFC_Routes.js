@@ -38,6 +38,7 @@ eddsa_rdfcRouter.post('/credentials/issue', async function (req, res, next) {
             }
         }
         const signCred = await eddsa_rdfc_sign(document, keyPair, localOptions);
+        console.log(JSON.stringify(signCred, null, 2));
         logger.info(`Response to issue request #${issue_req_count}`, {api: "EdDSA_RDFCissue", doc: signCred, reqNum: issue_req_count});
         res.status(201).json(signCred);
     } catch (error) {
@@ -72,7 +73,7 @@ eddsa_rdfcRouter.post('/credentials/verify', async function (req, res, next) {
         const proofValue = signedDoc.proof?.proofValue;
         let pubKey = extractPublicKey(signedDoc);
         const result = await eddsa_rdfc_verify(signedDoc, pubKey, localOptions);
-        logger.info(`Responding to verify request #${verify_req_count} Derived Proof verified: ${result}`,
+        logger.info(`Responding to verify request #${verify_req_count} Proof verified: ${result}`,
               {api: "EdDSA_RDFCverify", reqNum: verify_req_count});
         let statusCode = 200;
         if (!result) {
