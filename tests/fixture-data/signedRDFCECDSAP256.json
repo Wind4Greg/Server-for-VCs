@@ -19,13 +19,9 @@
   "proof": {
     "type": "DataIntegrityProof",
     "cryptosuite": "ecdsa-rdfc-2019",
-    "created": "2024-07-29T17:12:21.818Z",
+    "created": "2024-08-20T18:50:50.152Z",
     "verificationMethod": "did:key:zDnaepBuvsQ8cpsWrVKw8fbpGpvPeNSjVPTWoq6cRqaYzBKVP#zDnaepBuvsQ8cpsWrVKw8fbpGpvPeNSjVPTWoq6cRqaYzBKVP",
     "proofPurpose": "assertionMethod",
-    "@context": [
-      "https://www.w3.org/ns/credentials/v2",
-      "https://www.w3.org/ns/credentials/examples/v2"
-    ],
-    "proofValue": "z2TembSZH9q5vjtuJNDiDtT2WLNQ4Aw9eivNLZJGeAaJ9fDn3qmidNW62uj3dqs43VDo1QXYp5BqFJ8xNbzVVMqdA"
+    "proofValue": "z53GcwyWjN6UNHJsxxCKAcAj1uJUEHdRBvLdiB73YxRABxEnho3txKVrvmXq4D9JVmecf5tbDxRmCjh7FKJSr1891"
   }
 }
