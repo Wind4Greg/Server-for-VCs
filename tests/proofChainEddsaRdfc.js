@@ -19,7 +19,7 @@ const signedDocExtendedChain = JSON.parse(
 
 describe("Proof Set and Chain EdDSA-RDFC Verification", function () {
     this.timeout(0); // Turn off timeouts
-    it("Simple ECDA-RDFC Verification", async function () {
+    it("Simple EdDSA-RDFC Verification", async function () {
         const content = {verifiableCredential: signedDocSimple1, options: {}};
         let res = await fetch(urlBase + "EdDSA-RDFC/credentials/verify", {
         method: "POST",
@@ -30,7 +30,7 @@ describe("Proof Set and Chain EdDSA-RDFC Verification", function () {
         });
         assert.isOk(res.ok);
     });
-    it("Proof Set ECDA-RDFC Verification", async function () {
+    it("Proof Set EdDSA-RDFC Verification", async function () {
         const content = {verifiableCredential: signedDocSet, options: {}};
         let res = await fetch(urlBase + "EdDSA-RDFC/credentials/verify", {
         method: "POST",
@@ -41,7 +41,7 @@ describe("Proof Set and Chain EdDSA-RDFC Verification", function () {
         });
         assert.isOk(res.ok);
     });
-    it("Proof Chain Simple ECDA-RDFC Verification", async function () {
+    it("Proof Chain Simple EdDSA-RDFC Verification", async function () {
         const content = {verifiableCredential: signedDocSimpleChain, options: {}};
         let res = await fetch(urlBase + "EdDSA-RDFC/credentials/verify", {
         method: "POST",
@@ -52,7 +52,7 @@ describe("Proof Set and Chain EdDSA-RDFC Verification", function () {
         });
         assert.isOk(res.ok);
     });
-    it("Proof Chain Extended ECDA-RDFC Verification", async function () {
+    it("Proof Chain Extended EdDSA-RDFC Verification", async function () {
         const content = {verifiableCredential: signedDocExtendedChain, options: {}};
         let res = await fetch(urlBase + "EdDSA-RDFC/credentials/verify", {
         method: "POST",
