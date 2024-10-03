@@ -1,51 +1,87 @@
 {
-    "$id": "https://grotto-networking.com/di-proof.schema.json",
-    "title": "DIProof",
-    "description": "A basic data integrity proof validator",
-    "type": "object",
-    "properties": {
-     "id": {
-          "type": "string",
-          "format": "uri"
-     },
-     "type": {
-          "enum": ["DataIntegrityProof"]
-     },
-     "proofPurpose": {
-          "type": "string"
-     },
-     "verificationMethod": {
-          "type": "string",
-          "format": "uri"
-     },
-     "created": {
-          "type": "string",
-          "format": "date-time"
-     },
-     "expires": {
-          "type": "string",
-          "format": "date-time"
-     },
-     "domain": {
-          "type": ["string", "array"]
-     },
-     "challenge": {
-          "type": "string"
-     },
-     "proofValue": {
-          "type": "string"
-     },
-     "previousProof": {
-          "type": ["string", "array"]
-     },
-     "nonce": {
-          "type": "string"
-     },
-     "cryptosuite": {
-          "description": "Add cryptosuite names that you can support",
-          "enum": ["ecdsa-sd-2023", "bbs-2023", "ecdsa-jcs-2019", "ecdsa-rdfc-2019","eddsa-jcs-2022", "eddsa-rdfc-2022"]
+     "$id": "https://grotto-networking.com/di-proof.schema.json",
+     "title": "DIProof",
+     "description": "A basic data integrity proof validator",
+     "anyOf": [
+          {
+               "$ref": "#/definitions/proofObject"
+          },
+          {
+               "type": "array",
+               "description": "Array of proof objects",
+               "items": {
+                    "$ref": "#/definitions/proofObject"
+               }
+          }
+     ],
+     "definitions": {
+          "proofObject": {
+               "type": "object",
+               "properties": {
+                    "id": {
+                         "type": "string",
+                         "format": "uri"
+                    },
+                    "type": {
+                         "enum": [
+                              "DataIntegrityProof"
+                         ]
+                    },
+                    "proofPurpose": {
+                         "type": "string"
+                    },
+                    "verificationMethod": {
+                         "type": "string",
+                         "format": "uri"
+                    },
+                    "created": {
+                         "type": "string",
+                         "format": "date-time"
+                    },
+                    "expires": {
+                         "type": "string",
+                         "format": "date-time"
+                    },
+                    "domain": {
+                         "type": [
+                              "string",
+                              "array"
+                         ]
+                    },
+                    "challenge": {
+                         "type": "string"
+                    },
+                    "proofValue": {
+                         "type": "string"
+                    },
+                    "previousProof": {
+                         "type": [
+                              "string",
+                              "array"
+                         ]
+                    },
+                    "nonce": {
+                         "type": "string"
+                    },
+                    "cryptosuite": {
+                         "description": "Add cryptosuite names that you can support",
+                         "enum": [
+                              "ecdsa-sd-2023",
+                              "bbs-2023",
+                              "ecdsa-jcs-2019",
+                              "ecdsa-rdfc-2019",
+                              "eddsa-jcs-2022",
+                              "eddsa-rdfc-2022"
+                         ]
+                    }
+               },
+               "required": [
+                    "type",
+                    "proofPurpose",
+                    "verificationMethod",
+                    "proofValue",
+                    "cryptosuite"
+               ]
+          }
      }
-
-    },
-    "required": ["type", "proofPurpose", "verificationMethod", "proofValue", "cryptosuite" ]
 }

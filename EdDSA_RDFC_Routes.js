@@ -5,7 +5,7 @@ import express from 'express';
 import { credentialValidator, proofValidator } from './validators.js';
 import { eddsa_rdfc_sign, eddsa_rdfc_verify } from './lib/EdDSA_RDFC_signVerify.js';
 import { logger } from './logging.js'
-import { extractPublicKey, getServerKeyPair } from './helpers.js';
+import { getServerKeyPair } from './helpers.js';
 import { localLoader } from './documentLoader.js'
 
 // Obtain key material and process into byte array format
@@ -65,13 +65,7 @@ eddsa_rdfcRouter.post('/credentials/verify', async function (req, res, next) {
             throw { type: "missingProof" };
         }
         proofValidator(signedDoc.proof, req.body.options);
-        // Check crypto suite
-        if (signedDoc.proof.cryptosuite !== "eddsa-rdfc-2022")  {
-            throw { type: "cryptosuiteMismatch" };
-        }
-        const proofValue = signedDoc.proof?.proofValue;
-        let pubKey = extractPublicKey(signedDoc);
-        const result = await eddsa_rdfc_verify(signedDoc, pubKey, localOptions);
+        const result = await eddsa_rdfc_verify(signedDoc, localOptions);
         logger.info(`Responding to verify request #${verify_req_count} Proof verified: ${result}`,
               {api: "EdDSA_RDFCverify", reqNum: verify_req_count});
         let statusCode = 200;

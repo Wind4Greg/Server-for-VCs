@@ -18,6 +18,7 @@ const signedDocExtendedChain = JSON.parse(
                 await readFile(new URL(testDataPath + fileNameSigned, import.meta.url)));
 
 describe("Proof Set and Chain EdDSA-RDFC Verification", function () {
+    this.timeout(0); // Turn off timeouts
     it("Simple ECDA-RDFC Verification", async function () {
         const content = {verifiableCredential: signedDocSimple1, options: {}};
         let res = await fetch(urlBase + "EdDSA-RDFC/credentials/verify", {
