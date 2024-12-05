@@ -5,7 +5,7 @@ import { urlBase } from './testConfig.js'
 
 const testDataPath = './fixture-data/'
 const fileName = 'derivedDocumentBBS.json'; // This file uses an empty presentation header.
-// const fileName = 'dbSigned2.json';
+// const fileName = 'tempDerived.json';
 const signedDerived = JSON.parse(
     await readFile(new URL(testDataPath + fileName, import.meta.url)));
 

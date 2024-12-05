@@ -10,7 +10,7 @@ import { verifyDerived } from './lib/BBSverifyDerived.js'
 import { localLoader } from './documentLoader.js'
 import { logger } from './logging.js'
 import { isBBS_base, extractPublicKey, getServerKeyPairBBS } from './helpers.js';
-import { API_ID_BBS_SHA, prepareGenerators } from '@grottonetworking/bbs-signatures'
+import { API_ID_BBS_SHA, prepareGenerators } from './lib/BBS.js'
 
 // Pre-compute BBS generators for up to 100 messages
 const gens = await prepareGenerators(101, API_ID_BBS_SHA);
